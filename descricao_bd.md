@@ -12,3 +12,12 @@ Uma empresa é composta por diferentes prédios e departamentos. Um prédio poss
 - Conferência: data.
 
 ## Relações
+- Empresa possui Prédios.
+- Empresa possui Departamentos.
+- Prédio possui Salas.
+- Sala aloca-se Patrimônio.
+- Departamento responsável Salas.
+- Departamento possui Funcionário.
+- Departamento realiza Conferência.
+- Da realização da conferência participa Funcionário.
+- Conferência confere Patrimônio.
