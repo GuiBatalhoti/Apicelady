@@ -36,28 +36,19 @@ O sistema Apicelady foi desenvolvido visando automatizar o processo de gerência
     - **RF1.6**: O sistema deve ser capaz de mostrar os bens filtrados por status: `ativo`, `baixado`, `manutenção` e `empréstimo`.
     - **RF1.7**: O sistema deve permitir a alteração de condição de uso de um bem, de `utilizável` para `sem condição de uso`.
         - **RF1.7.1**: O sistema deve ser capaz de mostrar os bens filtrados por condição de uso: `utilizável` e `sem condição de uso`.
-    - **RF1.8**: O sistema deve permitir a movimentação, ou seja, alocação ou realocação entre salas de um bem de um local para outro, ou seja, adicionar uma nova localização e manter no histórico a localização antiga.
+    - **RF1.8**: O sistema deve permitir a movimentação entre salas de um bem, ou seja, alocação ou realocação entre salas de um bem de uma sala para outra, adicionando uma nova localização (sala) e manter no histórico a localização antiga.
         - **RF1.6.1**: O sistema deve ser capaz de mostrar o histórico de localização de um bem.
     - **RF1.9**: O sistema deve permitir a transferência de responsabilidade de um bem de um responsável para outro, ou seja, adicionar um novo responsável e manter no histórico o responsável antigo.
         - **RF1.9.1**: O sistema deve ser capaz de mostrar o histórico de responsáveis de um bem.
     - **RF1.10**: O sistema deve permitir a adição de observações sobre um bem.
         - **RF1.10.1**: O sistema deve ser capaz de mostrar as observações de um bem.
-    
-
-
-
-
-    - **RF1.4**: O sistema deve permitir a transferência de responsabilidade de um bem de um responsável para outro, ou seja, adicionar um novo responsável e manter no histórico o responsável antigo.
-        - **RF1.4.1**: O sistema deve ser capaz de mostrar o histórico de responsáveis de um bem.
-    
-
-
-
-- **RF2**: O sistema deve ser capaz de registrar as empresas. Cada empresa deve possuir nome, localização[cep, cidadde, rua, número] e descrição.
-- **RF2.1**: O sistema deve ser capaz de mostrar todos os dados de uma empresa.
-- **RF3**: O sistema deve ser capaz de registrar os prédios. Cada prédio deve possuir nome, descrição e localização[cep, cidadde, rua, número].
-- **RF3.1**: O sistema deve ser capaz de mostrar todos os dados de um prédio.
-- **RF4**: O sistema deve ser capaz de registrar as salas. Cada sala deve possuir nome, número, descrição, histórico de repsonsáveis.
+    - **RF1.11**: O Departamento de Patrimônio tem responsabilidade sobre todos os bens, ou seja, todos e qualquer tipo de alteração de um bem deve ser aprovada pelo Departamento de Patrimônio.
+- **RF2**: O sistema deve ser capaz de registrar as empresas. Cada empresa deve possuir nome, localização (cep, cidadde, rua, número e pontos gepgráficos [latitude e longitude]) e descrição.
+    - **RF2.1**: O sistema deve ser capaz de mostrar todos os dados de uma empresa.
+- **RF3**: O sistema deve ser capaz de registrar os prédios. Cada prédio deve possuir nome, descrição e localização (cep, cidadde, rua, número, pontos geográficos [latitude e longitude]) e salas.
+    - **RF3.1**: O sistema deve ser capaz de mostrar todos os dados de um prédio.
+    - **RF3.2**: O sistema deve ser capaz de mostrar todas as salas de um prédio.
+- **RF4**: O sistema deve ser capaz de registrar as salas. Cada sala deve possuir nome, número, descrição, histórico de responsáveis e bens da sala.
 - **RF4.1**: O sistema deve ser capaz de mostrar todos os dados de uma sala.
 - **RF5**: O sistema deve ser capaz de registrar os departamentos. Cada departamento deve possuir nome, descrição.
 - **RF5.1**: O sistema deve ser capaz de mostrar todos os dados de um departamento.
