@@ -1,8 +1,7 @@
 import React from "react";
 import { SafeAreaView, View, Text, Image } from "react-native";
-import { ScreenProps } from "../interfaces/interfaces";
 
-function HomeScreen({ navigation }: ScreenProps) {
+function HomeScreen() {
   return (
     <SafeAreaView>
       <View>
