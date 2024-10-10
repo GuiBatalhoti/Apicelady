@@ -1,48 +1,55 @@
-import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const data = [
-    { tag: "TAG-001", patrimonio: "001", descricao: "Descrição do patrimônio 001" },
-    { tag: "TAG-002", patrimonio: "002", descricao: "Descrição do patrimônio 002" },
-    { tag: "TAG-003", patrimonio: "003", descricao: "Descrição do patrimônio 003" },
-];
-
-export function DataTable({ a }) {
+export function DataTable({ data }) {
+  
+    // Função para lidar com o clique em uma linha
+    function handleRowPress(item) {
+        // Exibe um alerta com os detalhes, mas pode ser substituído por uma navegação ou outra ação
+        Alert.alert(
+            "Detalhes do Patrimônio",
+            `Tag: ${item.tag}\nPatrimônio: ${item.patrimonio}\nDescrição: ${item.descricao}`
+        );
+    }
 
     function renderItem({ item }) {
         return (
-            <View style={styles.row}>
-                <Text>{item.tag}</Text>
-                <Text>{item.patrimonio}</Text>
-                <Text>{item.descricao}</Text>
-            </View>
+            <TouchableOpacity onPress={() => handleRowPress(item)}>
+                <View style={styles.row}>
+                    <Text style={styles.cell}>{item.tag}</Text>
+                    <Text style={styles.cell}>{item.patrimonio}</Text>
+                </View>
+            </TouchableOpacity>
         );
     }
 
     return (
-        <View>
+        <SafeAreaView style={styles.container}>
             <View style={styles.headerBar}>
                 <Text style={styles.headerBarText}>Patrimônios Encontrados</Text>
             </View>
-            
+
             <View style={styles.header}>
                 <Text style={styles.heading}>Tag</Text>
                 <Text style={styles.heading}>Patrimônio</Text>
-                <Text style={styles.heading}>Descrição</Text>
             </View>
 
-            <FlatList 
+            <FlatList
                 data={data}
-                keyExtractor={(item) => item.tag.toString()}
+                keyExtractor={(item) => item.tag}
                 renderItem={renderItem}
+                style={styles.flatlist}
             />
-        </View>
-            
+        </SafeAreaView>
     );
-
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        marginTop: 30,
+    },
     headerBar: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -51,6 +58,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#00ceff",
         borderRadius: 5,
         elevation: 2,
+        justifyContent: "center",
     },
     headerBarText: {
         fontSize: 16,
@@ -68,15 +76,22 @@ const styles = StyleSheet.create({
     heading: {
         flex: 1,
         fontSize: 14,
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+    flatlist: {
+        flex: 1,
     },
     row: {
         flexDirection: "row",
         justifyContent: "space-between",
-        paddingVertical: 10,
-        paddingHorizontal: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: "#f5f5f5",
+        marginVertical: 8,
+        marginHorizontal: 2,
         elevation: 1,
+        borderRadius: 5,
+        borderColor: "#fff",
+        padding: 10,
+        backgroundColor: "#fff",
     },
     cell: {
         flex: 1,
