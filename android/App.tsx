@@ -1,12 +1,12 @@
 import 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
-import { SafeAreaView,Text, ScrollView, FlatList } from 'react-native';
+import { Text } from 'react-native';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from './src/config/firebase'
 import LoadingScreen from './src/components/LoadingScreen';
 import ErrorScreen from './src/components/ErrorScreen';
-import HomeScreen from './src/components/HomeScreen';
 import DrawerNav from './src/components/DrawerNav';
+import { USBDeviceProvider } from './src/context/usbDeviceContext';
 
 function App(): React.JSX.Element {
 
@@ -62,7 +62,9 @@ function App(): React.JSX.Element {
   }
 
   return (
-    <DrawerNav />
+    <USBDeviceProvider>
+      <DrawerNav />
+    </USBDeviceProvider>
   );
 }
 
