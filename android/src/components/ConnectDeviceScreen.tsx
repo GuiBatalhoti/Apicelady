@@ -17,15 +17,10 @@ function ConnectDeviceScreen( {navigation} : ScreenProps) {
     useUSBMonitor();
 
     useEffect(() => {
-        setDeviceConnected(false);
-        setUSBPermission(false);
-    }, [USBDevice]);
-
-    useEffect(() => {
         if (USBPermission) {
             Alert.alert("Permissão concedida", "Dispositivo conectado com sucesso!!");
         } else {
-            Alert.alert("Permissão negada", "Não foi possível conectar ao dispositivo.");
+            Alert.alert("Permissão negada", "Primeiro é preciso autorizar a conexão USB.");
         }
     }, [USBPermission]);
 
