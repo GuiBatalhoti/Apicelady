@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useUsbDeviceContext } from "../context/usbDeviceContext";
-import { SafeAreaView, View, Text, Image } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { ScreenProps, USBDeviceType } from "../interfaces/interfaces";
 import { useUSBMonitor } from "./USBMonitor";
+import { DataTable } from "./DataTable";
 
 function HomeScreen({ navigation }: ScreenProps) {
 
@@ -11,23 +12,6 @@ function HomeScreen({ navigation }: ScreenProps) {
   const { config: USBDevice, updateConfig: updateUSBDeviceContext } = useUsbDeviceContext() as { config: USBDeviceType, updateConfig: (config: USBDeviceType) => void };
 
   const [receivedData, setReceivedData] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (USBDevice.serialDevice?.deviceId) {
-      const interval = setInterval(() => {
-          USBDevice.serialDevice?.onReceived((event) => {
-          let dataString = hexToText(event.data);
-          setReceivedData([...receivedData, dataString]);
-          // return receivedData + event.data;
-        });
-      }, 1);
-      return () => clearInterval(interval);
-    } else {
-      setReceivedData([]);
-    }
-  }, [USBDevice.serialDevice?.deviceId]); 
-
-  
 
   function hexToText(hexString: string): string {
     // Remove qualquer espaço ou separador, se houver
@@ -48,25 +32,43 @@ function HomeScreen({ navigation }: ScreenProps) {
     return text;
   }
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (USBDevice.serialDevice?.deviceId) {
+        USBDevice.serialDevice?.onReceived((event) => {
+          let receivedData = event.data;
+
+        });
+      }
+      return () => clearTimeout(timer);
+    }, 1000);
+  });
+
+
   return (
-    <SafeAreaView>
-      <View>
-        <Text>Home Screen</Text>
-        <Image
-          source={{ uri: "https://reactnative.dev/docs/assets/p_cat2.png" }}
-          style={{ width: 200, height: 200 }}
-        />
-        <Text>USB Device: {USBDevice.serialDevice ? USBDevice.serialDevice.deviceId : 'Nenhum dispositivo conectado'}</Text>
-        
-        {USBDevice.serialDevice?.deviceId && receivedData ? (
-          <Text>{receivedData}</Text> // Mostra os dados recebidos quando o dispositivo está conectado
-        ) : (
-          <Text>Nenhum dado disponível</Text> // Mostra mensagem quando o dispositivo não está conectado ou sem dados
-        )}
-        
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Text style={styles.text}>USB Device: {USBDevice.serialDevice ? USBDevice.serialDevice.deviceId : 'Nenhum dispositivo conectado'}</Text>     
+      <DataTable a={receivedData}/>
+    </View>
   );
 }
 
 export default HomeScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+  },
+  text: {
+    fontSize: 20,
+    margin: 10,
+  },
+  input: {
+    height: 40,
+    width: 150,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
+});
