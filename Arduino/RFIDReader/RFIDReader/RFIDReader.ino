@@ -46,6 +46,7 @@ Tag lerDados(Tag tag) {
 
   aux1 = lerSerial();
   for (unsigned int i = 0x04; i <= tamanhoParam; i++) { //i inicia em 4, pois já foram lidos 4 campos do frame dentro do tamanho do parâmetro
+    Serial.println()
     aux2 = lerSerial();
     aux1 = (aux1 << 8) | aux2;
     if (i == tamanhoParam - 0x02) { //os dois últimos campos do frame
@@ -112,13 +113,11 @@ void loop() {
 
     Tag tag;
     dadosRecebidos = lerSerial(); //lê o Header
-    Serial.println(dadosRecebidos, HEX);
     if (dadosRecebidos == 0xAA) { //código do tipo de frame (notificação)
       recebendoDados = true;
     }
-    Serial.println(dadosRecebidos, HEX);
     if (dadosRecebidos == 0x22 && recebendoDados) {
-      lerDados(tag);
+      tag = lerDados(tag);
       tag.toString();
       recebendoDados = false;
     }
