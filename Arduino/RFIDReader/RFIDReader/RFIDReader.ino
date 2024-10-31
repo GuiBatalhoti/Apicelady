@@ -17,18 +17,17 @@ class Tag {
     // Método para imprimir os valores da classe
     void toString() {
       Serial.print("RSSI: ");
-      Serial.println(RSSI);
+      Serial.print(RSSI);
       Serial.print("PC: ");
-      Serial.println(PC);
+      Serial.print(PC);
       Serial.print("EPC: ");
-      Serial.println(EPC);
+      Serial.print(EPC);
       Serial.print("CRC: ");
-      Serial.println(CRC);
+      Serial.print(CRC);
     }
 };
 
 unsigned int lerSerial() {
-  // delay(10);
   return Serial.read();
 }
 
@@ -38,10 +37,12 @@ Tag lerDados(Tag tag) {
   unsigned int aux1 = lerSerial(); //PL(MSB)
   unsigned int aux2 = lerSerial(); //PL(LSB)
   unsigned int tamanhoParam = (aux1 << 8) | aux2; //tamanho do frame um bytes
-  tag.RSSI = String(lerSerial(), HEX);
+  aux1 = lerSerial();
+  tag.RSSI = String(aux1, HEX);
   aux1 = lerSerial(); //PC(MSB)
   aux2 = lerSerial(); //PC(LSB)
-  tag.PC = String((aux1 << 8) | aux2, HEX);
+  aux1 = (aux1 << 8) | aux2;
+  tag.PC = String(aux1, HEX);
 
   aux1 = lerSerial();
   for (unsigned int i = 0x04; i <= tamanhoParam; i++) { //i inicia em 4, pois já foram lidos 4 campos do frame dentro do tamanho do parâmetro
@@ -51,7 +52,8 @@ Tag lerDados(Tag tag) {
       tag.EPC = String(aux1, HEX);
       aux1 = lerSerial(); //CRC(MSB)
       aux2 = lerSerial(); //CRC(LSB)
-      tag.CRC = String(lerSerial(), HEX);
+      aux1 = (aux1 << 8) | aux2;
+      tag.CRC = String(aux1, HEX);
     }
   }
   aux1 = lerSerial(); //Checksum
@@ -76,6 +78,7 @@ void comandoLeitura() {
         break;
     }
     digitalWrite(LED_BUILTIN, LOW);
+    loopCount = 0;
   }
 }
 
@@ -109,14 +112,17 @@ void loop() {
 
     Tag tag;
     dadosRecebidos = lerSerial(); //lê o Header
+    Serial.println(dadosRecebidos, HEX);
     if (dadosRecebidos == 0xAA) { //código do tipo de frame (notificação)
       recebendoDados = true;
     }
-    dadosRecebidos = lerSerial(); //lê o comando
+    Serial.println(dadosRecebidos, HEX);
     if (dadosRecebidos == 0x22 && recebendoDados) {
       lerDados(tag);
       tag.toString();
       recebendoDados = false;
     }
   }
+  loopCount++;
+  delay(50);
 }
