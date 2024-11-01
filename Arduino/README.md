@@ -6,16 +6,14 @@ Todas as especificações estão seguindo o Manual do Fabricante do R200 UHF RFI
 
 ## Funcionamento
 
-1. **Conexão com o Arduino**: O módulo RFID é conectado ao Arduino através dos pinos Tx e Rx. O pino Tx do módulo é conectado ao pino Rx do Arduino e o pino Rx do módulo é conectado ao pino Tx do Arduino.
+1. **Conexão com o Arduino**: O módulo RFID é conectado ao Arduino através dos pinos Tx e Rx. O pino Tx do módulo é conectado ao pino Rx do Arduino e o pino Rx do módulo é conectado ao pino Tx do Arduino. Também a placa precisa de um Ground e 5V para funcionar.
 
 2. **Leitura de Tags**: O módulo RFID é capaz de ler tags RFID passivas. Para isso, é necessário enviar um comando para o módulo e ele retornará a tag lida.
 
-    2.1. **Comando de Leitura**: O comando de leitura é enviado através da porta serial do Arduino. O comando é enviado em formato de hexadecimal.
+    2.1. **Comando de Leitura**: O comando de leitura é enviado através dos pinos Tx e Rx do Arduino.
 
-    2.2. **Resposta do Módulo**: A cada loop chamada a função "Serial.read()" o arduino lê um byte da porta serial, logo é necessário fazer um loop da leitura. A resposta do módulo é enviada em formato de hexadecimal.
+    2.2. **Resposta do Módulo**: O módulo envia o quadro de resposta em partes, cada "Serial.read()" lê um byte do quadro, especificado no manual do fabricante.
 
-    2.3. **Os Comandos**: Todos os comandos estão explicados no Manual do Fabricante. Os significantes para a leitura foram implementados no código do Arduino. 
+    2.3. **Os Comandos**: Todos os comandos estão explicados no Manual do Fabricante. Utiliza-se apenas o comando de Leitura única no código.
 
-3. **Envio de Dados**: A cada um determinado tempo o Arduino envia o camndo de leitura para o módulo RFID e recebe a tag lida.
-
-4. **Comunicação com o Android**: O Arduino envia a tag lida para o Android através da porta serial. O Android recebe a tag e envia para o servidor.
+4. **Comunicação com o Android**: O Arduino envia a tag lida para o Android através da porta USB. O Android recebe os dados enviados pelo Arduino. Para mais infromações, acesse o diretório [/Android](/android).
