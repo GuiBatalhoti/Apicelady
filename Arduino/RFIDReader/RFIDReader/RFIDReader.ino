@@ -19,9 +19,9 @@ class Tag {
       Serial.print("RSSI:");
       Serial.print(RSSI);
       Serial.print("PC:");
-      Serial.print(PC);
+      Serial.print(PC);  
       Serial.print("EPC:");
-      Serial.print(EPC);
+      Serial.print(EPC); 
       Serial.print("CRC:");
       Serial.println(CRC);
     }
@@ -38,20 +38,20 @@ Tag lerDados(Tag tag) {
   unsigned int aux2 = lerSerial(); //PL(LSB)
   unsigned int tamanhoParam = (aux1 << 8) | aux2; //tamanho do frame um bytes
   aux1 = lerSerial();
-  tag.RSSI = String(aux1, HEX);
+  tag.RSSI = String(aux1, DEC);
   aux1 = lerSerial(); //PC(MSB)
   aux2 = lerSerial(); //PC(LSB)
   aux1 = (aux1 << 8) | aux2;
-  tag.PC = String(aux1, HEX);
+  tag.PC = String(aux1, DEC);
 
   aux1 = lerSerial();
   for (unsigned int i = 0x04; i <= tamanhoParam; i++) { //i inicia em 4, pois já foram lidos 4 campos do frame dentro do tamanho do parâmetro
     if (i == tamanhoParam - 0x02) { //os dois últimos campos do frame
-      tag.EPC = String(aux1, HEX);
+      tag.EPC = String(aux1, DEC);
       aux1 = lerSerial(); //CRC(MSB)
       aux2 = lerSerial(); //CRC(LSB)
       aux1 = (aux1 << 8) | aux2;
-      tag.CRC = String(aux1, HEX);
+      tag.CRC = String(aux1, DEC);
       break;
     }
     aux2 = lerSerial();
