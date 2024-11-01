@@ -16,14 +16,14 @@ class Tag {
 
     // Método para imprimir os valores da classe
     void toString() {
-      Serial.print("RSSI: ");
+      Serial.print("RSSI:");
       Serial.print(RSSI);
-      Serial.print("PC: ");
+      Serial.print("PC:");
       Serial.print(PC);
-      Serial.print("EPC: ");
+      Serial.print("EPC:");
       Serial.print(EPC);
-      Serial.print("CRC: ");
-      Serial.print(CRC);
+      Serial.print("CRC:");
+      Serial.println(CRC);
     }
 };
 
@@ -46,16 +46,16 @@ Tag lerDados(Tag tag) {
 
   aux1 = lerSerial();
   for (unsigned int i = 0x04; i <= tamanhoParam; i++) { //i inicia em 4, pois já foram lidos 4 campos do frame dentro do tamanho do parâmetro
-    Serial.println()
-    aux2 = lerSerial();
-    aux1 = (aux1 << 8) | aux2;
     if (i == tamanhoParam - 0x02) { //os dois últimos campos do frame
       tag.EPC = String(aux1, HEX);
       aux1 = lerSerial(); //CRC(MSB)
       aux2 = lerSerial(); //CRC(LSB)
       aux1 = (aux1 << 8) | aux2;
       tag.CRC = String(aux1, HEX);
+      break;
     }
+    aux2 = lerSerial();
+    aux1 = (aux1 << 8) | aux2;
   }
   aux1 = lerSerial(); //Checksum
   aux2 = lerSerial(); //EOF
@@ -65,7 +65,7 @@ Tag lerDados(Tag tag) {
 
 void comandoLeitura() {
   // Envia o comando para a placa
-  if (loopCount >= 30) { //garantia que o arduino vai ler todos os dados recebidos pela placa, fazendo o loop completamente por 30 vezes
+  if (loopCount >= 25) { //garantia que o arduino vai ler todos os dados recebidos pela placa, fazendo o loop completamente por 30 vezes
     digitalWrite(LED_BUILTIN, HIGH);
     switch (comando) {
       case 0:
@@ -112,7 +112,7 @@ void loop() {
     */
 
     Tag tag;
-    dadosRecebidos = lerSerial(); //lê o Header
+    dadosRecebidos = lerSerial(); //lê o Header ou o comando, se ler o header, começa a receber os dados
     if (dadosRecebidos == 0xAA) { //código do tipo de frame (notificação)
       recebendoDados = true;
     }
@@ -122,6 +122,7 @@ void loop() {
       recebendoDados = false;
     }
   }
+  //um input a cada 0,5 segundos nessa combinação
   loopCount++;
-  delay(50);
+  delay(20);
 }
