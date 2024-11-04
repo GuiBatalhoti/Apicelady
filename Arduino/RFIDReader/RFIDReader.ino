@@ -1,10 +1,47 @@
+//Classe da Tag, com seus parâmetros e o método de print
+class Tag {
+  public:
+    String RSSI;
+    String PC;
+    String EPC;
+    String CRC;
+
+    Tag(String RSSI, String PC, String EPC, String CRC){
+      this->RSSI = RSSI;
+      this->PC = PC;
+      this->EPC = EPC;
+      this->CRC = CRC;
+    }
+
+    Tag(){
+
+    }
+
+    ~Tag(){
+      
+    }
+
+    // Método para imprimir os valores da classe
+    void toString() {
+      Serial.print("%") //indicador de início de impressão de Tag
+      Serial.print("RSSI:");
+      Serial.print(RSSI);
+      Serial.print(";PC:");
+      Serial.print(PC);  
+      Serial.print(";EPC:");
+      Serial.print(EPC); 
+      Serial.print(";CRC:");
+      Serial.print(CRC);
+      Serial.println("$") //indicador de fim de impressão de Tag
+    }
+};
+
+
 // Variáveis globais
 
 // não utilizar, apenas diminuir o tempo para a leitura do "ComandoReadOnce"
 // unsigned char CommandReadMultiFFFF[10] = {0XAA,0X00,0X27,0X00,0X03,0X22,0XFF,0XFF,0X4A,0XDD}; //ler 0xFFFF vezes 
 // unsigned char CommandReadMulti20[10] = {0XAA,0X00,0X27,0X00,0X03,0X22,0X00,0X01,0X4D,0XDD}; //ler 0x20 == 32 vezes
-
-
 unsigned char CommandReadOnce[7] = {0XAA, 0X00, 0X22, 0X00, 0X00, 0X22, 0XDD}; // le apenas uma única vez
 unsigned int comando = 2;
 
@@ -14,27 +51,8 @@ unsigned int dadosRecebidos = 0;
 bool recebendoDados = false;
 unsigned int loopCount = 0;
 
-
-//Classe da Tag, com seus parâmetros e o método de print
-class Tag {
-  public:
-    String RSSI;
-    String PC;
-    String EPC;
-    String CRC;
-
-    // Método para imprimir os valores da classe
-    void toString() {
-      Serial.print("RSSI:");
-      Serial.print(RSSI);
-      Serial.print("PC:");
-      Serial.print(PC);  
-      Serial.print("EPC:");
-      Serial.print(EPC); 
-      Serial.print("CRC:");
-      Serial.println(CRC);
-    }
-};
+//Tag anterior
+Tag tagAnterior("","","","");
 
 
 //caso seja necessário fazer alguma coisa antes da leitura
@@ -133,7 +151,10 @@ void loop() {
     }
     if (dadosRecebidos == 0x22 && recebendoDados) { //comando do quadro, dados da Tag
       tag = lerDados(tag);
-      tag.toString();
+      if(!tagAnterior.EPC.equals(tag.EPC)) {
+        tag.toString();
+        tagAnterior = tag;
+      }
       recebendoDados = false; //todos os dados lidos
     }
   }
