@@ -4,7 +4,7 @@ import { UsbSerialManager, Device, UsbSerial, Parity, EventData } from 'react-na
 import { UsbDeviceContextType, USBDeviceProviderProps } from '../interfaces/interfaces';
 
 const UsbDeviceContext = createContext<UsbDeviceContextType>({
-  receivedData: [],
+  receivedData: [], //somente o EPC da tag/ patrimônio
   usbDevice: React.createRef<UsbSerial | null>(),
 });
 
