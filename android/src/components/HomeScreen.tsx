@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useUsbDeviceContext } from "../context/usbDeviceContext";
 import { View, Text, StyleSheet } from "react-native";
-import { ScreenProps, USBDeviceType } from "../interfaces/interfaces";
+import { ScreenProps } from "../interfaces/interfaces";
 import { useUSBMonitor } from "./USBMonitor";
 import { DataTable } from "./DataTable";
+import { UsbSerial } from "react-native-usb-serialport-for-android";
 
 // const testingData = [
 //   { tag: "TAG-001", patrimonio: "001", descricao: "Descrição do patrimônio 001" },
@@ -24,47 +25,20 @@ import { DataTable } from "./DataTable";
 function HomeScreen({ navigation }: ScreenProps) {
 
   useUSBMonitor();
-
-  const { config: USBDevice, updateConfig: updateUSBDeviceContext } = useUsbDeviceContext() as { config: USBDeviceType, updateConfig: (config: USBDeviceType) => void };
-
-  const [receivedData, setReceivedData] = useState<string[]>([]);
-
-  function hexToText(hexString: string): string {
-    // Remove qualquer espaço ou separador, se houver
-    hexString = hexString.replace(/\s+/g, '');
-  
-    // Verifica se a string tem um número par de caracteres
-    if (hexString.length % 2 !== 0) {
-      throw new Error("A string hexadecimal deve ter um número par de caracteres.");
-    }
-  
-    let text = '';
-    for (let i = 0; i < hexString.length; i += 2) {
-      const hexPair = hexString.substring(i, i + 2);
-      const charCode = parseInt(hexPair, 16);
-      text += String.fromCharCode(charCode);
-    }
-  
-    return text;
-  }
+  const { receivedData, USBDevice } = useUsbDeviceContext() as unknown as { receivedData: string[], USBDevice: UsbSerial|null };
+  const [data, setData] = useState<string[]>([]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (USBDevice.serialDevice?.deviceId) {
-        USBDevice.serialDevice?.onReceived((event) => {
-          let receivedData = event.data;
-          let text = hexToText(receivedData);
-          setReceivedData(text.split('\n'));
-        });
-      }
-      return () => clearTimeout(timer);
-    }, 1000);
-  });
+    const previousData = [...data];
+    if (receivedData.length > 0) {
+      setData([...previousData, receivedData[0]]);
+    }
+  },[receivedData]);
 
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>USB Device: {USBDevice.serialDevice ? USBDevice.serialDevice.deviceId : 'Nenhum dispositivo conectado'}</Text>     
+      <Text style={styles.text}>USB Device: {USBDevice?.deviceId ? USBDevice.deviceId : 'Nenhum dispositivo conectado'}</Text>     
       <DataTable data={receivedData}/>
     </View>
   );

@@ -11,6 +11,11 @@ export interface USBDeviceProviderProps {
     children: ReactNode;
 }
 
+export interface UsbDeviceContextType {
+    receivedData: string[];
+    usbDevice: React.RefObject<UsbSerial | null>
+}
+
 export interface USBDeviceType {
     serialDevice: UsbSerial | null;
 }

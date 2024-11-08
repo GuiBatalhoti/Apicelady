@@ -2,33 +2,27 @@ import React, { useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface DataItem {
-    tag: string;
-    patrimonio: string;
-    descricao: string;
-}
-
 interface DataTableProps {
-    data: DataItem[];
+    data: string[];
 }
 
 export function DataTable({ data }: DataTableProps) {
   
     // Função para lidar com o clique em uma linha
-    function handleRowPress(item: DataItem) {
+    function handleRowPress() {
         // Exibe um alerta com os detalhes, mas pode ser substituído por uma navegação ou outra ação
         Alert.alert(
             "Detalhes do Patrimônio",
-            `Tag: ${item.tag}\nPatrimônio: ${item.patrimonio}\nDescrição: ${item.descricao}`
+            // `Tag: ${item.tag}\nPatrimônio: ${item.patrimonio}\nDescrição: ${item.descricao}`
         );
     }
 
-    function renderItem({ item }: { item: DataItem }) {
+    function renderItem({ item }: { item: String }) {
         return (
-            <TouchableOpacity onPress={() => handleRowPress(item)}>
+            <TouchableOpacity onPress={() => handleRowPress()}>
                 <View style={styles.row}>
-                    <Text style={styles.cell}>{item.tag}</Text>
-                    <Text style={styles.cell}>{item.patrimonio}</Text>
+                    <Text style={styles.cell}>{item}</Text>
+                    {/* <Text style={styles.cell}>{item.patrimonio}</Text> */}
                 </View>
             </TouchableOpacity>
         );
@@ -41,13 +35,12 @@ export function DataTable({ data }: DataTableProps) {
             </View>
 
             <View style={styles.header}>
-                <Text style={styles.heading}>Tag</Text>
-                <Text style={styles.heading}>Patrimônio</Text>
+                <Text style={styles.heading}>Tag/Patrimônio</Text>
             </View>
 
             <FlatList
                 data={data}
-                keyExtractor={(item) => item.tag}
+                keyExtractor={(item) => item}
                 renderItem={renderItem}
                 style={styles.flatlist}
             />
