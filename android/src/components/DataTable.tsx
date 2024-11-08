@@ -2,10 +2,20 @@ import React, { useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export function DataTable({ data }) {
+interface DataItem {
+    tag: string;
+    patrimonio: string;
+    descricao: string;
+}
+
+interface DataTableProps {
+    data: DataItem[];
+}
+
+export function DataTable({ data }: DataTableProps) {
   
     // Função para lidar com o clique em uma linha
-    function handleRowPress(item) {
+    function handleRowPress(item: DataItem) {
         // Exibe um alerta com os detalhes, mas pode ser substituído por uma navegação ou outra ação
         Alert.alert(
             "Detalhes do Patrimônio",
@@ -13,7 +23,7 @@ export function DataTable({ data }) {
         );
     }
 
-    function renderItem({ item }) {
+    function renderItem({ item }: { item: DataItem }) {
         return (
             <TouchableOpacity onPress={() => handleRowPress(item)}>
                 <View style={styles.row}>
@@ -52,13 +62,12 @@ const styles = StyleSheet.create({
     },
     headerBar: {
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "center",
         paddingVertical: 12,
         paddingHorizontal: 10,
         backgroundColor: "#00ceff",
         borderRadius: 5,
         elevation: 2,
-        justifyContent: "center",
     },
     headerBarText: {
         fontSize: 16,
