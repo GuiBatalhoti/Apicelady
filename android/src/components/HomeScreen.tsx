@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useUsbDeviceContext } from "../context/usbDeviceContext";
 import { View, Text, StyleSheet } from "react-native";
 import { ScreenProps } from "../interfaces/interfaces";
-import { useUSBMonitor } from "./USBMonitor";
 import { DataTable } from "./DataTable";
 import { UsbSerial } from "react-native-usb-serialport-for-android";
 
 
 function HomeScreen({ navigation }: ScreenProps) {
 
-  useUSBMonitor();
   const { receivedData, USBDevice } = useUsbDeviceContext() as unknown as { receivedData: string[], USBDevice: UsbSerial|null };
   const [data, setData] = useState<string[]>([]);
 
