@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { collection, DocumentData, getDocs, getFirestore } from "firebase/firestore";
 import data from '../../.env.json'
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -28,8 +28,27 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 if (app) {
-  console.log('')
-  console.log('Connected to Firebase')
-  console.log('')
+  console.log('');
+  console.log('Connected to Firebase');
+  console.log('');
 }
 export const db = getFirestore(app);
+
+export const getBens = async () => {
+  const bens: DocumentData[] = [];
+  const querySnapshot = await getDocs(collection(db, "bens"));
+  querySnapshot.forEach((doc) => {
+    bens.push(doc.data());
+  });
+  return bens
+}
+
+export const checkPat = async (pat: string) => {
+  const bens = await getBens();
+  const patrimony = bens.find((bem) => bem.patrimonio === pat);
+  if (patrimony) {
+    return true;
+  } else {
+    return false;
+  }
+}
