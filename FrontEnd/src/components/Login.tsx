@@ -1,6 +1,7 @@
 
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../config/firebase";
+import { GoogleAuthProvider } from "firebase/auth";
 import GoogleButton from "react-google-button";
 import "../styles/Roboto.css";
 import "../styles/Login.css";
@@ -9,11 +10,18 @@ import "../styles/Login.css";
 export default function Login() {
 
     const singInWithGoogle = async () => {
-        try {
-            await signInWithPopup(auth, googleProvider)
-        } catch (error) {
-            console.error(error)
-        }
+        await signInWithPopup(auth, googleProvider).then((result) => {
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential?.accessToken;
+            const user = result.user;
+            console.log(token, user);
+        }).catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            const email = error.email;
+            const credential = GoogleAuthProvider.credentialFromError(error);
+            console.log(errorCode, errorMessage, email, credential);
+        });
     }
 
 return (
