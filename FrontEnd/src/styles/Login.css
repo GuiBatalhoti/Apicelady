@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.logo {
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.googleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
