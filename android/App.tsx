@@ -1,63 +1,22 @@
 import 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
-import { Text } from 'react-native';
-import { collection, onSnapshot } from 'firebase/firestore';
-import { db } from './src/config/firebase'
 import LoadingScreen from './src/components/LoadingScreen';
-import ErrorScreen from './src/components/ErrorScreen';
 import DrawerNav from './src/components/DrawerNav';
 import { USBDeviceProvider } from './src/context/usbDeviceContext';
 
 function App(): React.JSX.Element {
 
-  const [data, setData] = useState<any[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [hasError, setHasError] = useState<boolean>(false)
-  const [errorMessage, setErrorMesage] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    getBens(db)
-  }, []);
-
-  function handleRetry() {
-    setLoading(true)
-    setHasError(false)
-    getBens(db)
-  }
-
-  async function getBens(db: any) {
-    const q = collection(db, 'bens')
-    await onSnapshot(q, (snapshot) => {
-      let tempData: any[] = []
-      snapshot.forEach((doc) => {
-        tempData.push({...doc.data(), id: doc.id})
-      })
-      setData(tempData)
-      if (data) {
-        setLoading(false)
-      } else {
-        setHasError(true)
-        setErrorMesage('Não foi possível carregar os dados...')
-      }
-    })
-  }
-
-  function renderItem({item}: any) {
-    return (
-      <>
-        <Text>{item.numero_patrimonio} | {item.descricao}</Text>
-      </>
-    )
-  }
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  },[]);
 
   if (loading) {
     return (
       <LoadingScreen />
-    )
-  } 
-  if (hasError) {
-    return (
-      <ErrorScreen errorMessage={errorMessage} onRetry={handleRetry} />
     )
   }
 

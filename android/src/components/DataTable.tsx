@@ -34,9 +34,9 @@ export function DataTable({ data }: DataTableProps) {
                 <Text style={styles.headerBarText}>Patrimônios Encontrados</Text>
             </View>
 
-            <View style={styles.header}>
+            {/* <View style={styles.header}>
                 <Text style={styles.heading}>Tag/Patrimônio</Text>
-            </View>
+            </View> */}
 
             <FlatList
                 data={data}
