@@ -5,23 +5,34 @@ import { GoogleAuthProvider } from "firebase/auth";
 import GoogleButton from "react-google-button";
 import "../styles/Roboto.css";
 import "../styles/Login.css";
-
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/userContext";
 
 export default function Login() {
 
+    let { login } = useUser();
+    const navigate = useNavigate();
+
+    const checkLocalStorage = () => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            return true;
+        }
+        return false
+    }
+
     const singInWithGoogle = async () => {
-        await signInWithPopup(auth, googleProvider).then((result) => {
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential?.accessToken;
-            const user = result.user;
-            console.log(token, user);
-        }).catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            const email = error.email;
-            const credential = GoogleAuthProvider.credentialFromError(error);
-            console.log(errorCode, errorMessage, email, credential);
-        });
+        if (!checkLocalStorage()) {
+            await signInWithPopup(auth, googleProvider).then((result) => {
+                // const credential = GoogleAuthProvider.credentialFromResult(result);
+                login(result.user);
+                navigate("/home");
+            }).catch((error) => {
+                console.log(error.code, error.message, error.email, GoogleAuthProvider.credentialFromError(error));
+            });
+            return;
+        }
+        navigate("/home");
     }
 
 return (
