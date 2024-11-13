@@ -1,11 +1,11 @@
-import { AppBar, Toolbar, IconButton, Stack, Button } from "@mui/material";
+import { AppBar, Toolbar, IconButton, Stack, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/userContext";
 
 export default function Navbar() {
 
     const navigate = useNavigate();
-    const { logout } = useUser();
+    const { user, logout } = useUser();
 
     const handleClick = (buttonName: string) => {
         if (buttonName === "home") return () => navigate("/home/:userID");
@@ -24,6 +24,9 @@ export default function Navbar() {
                     <Button color="inherit" id="sobre-button" onClick={handleClick("sobre")}>Sobre</Button>
                     <Button color="inherit" id="logout-button" onClick={handleClick("logout")}>Sair</Button>
                 </Stack>
+                <Typography component="div" sx={{ marginLeft: 'auto' }}>
+                    {user?.email}
+                </Typography>
             </Toolbar>
         </AppBar>
     )

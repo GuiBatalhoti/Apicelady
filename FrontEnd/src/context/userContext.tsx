@@ -8,11 +8,13 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider: React.FC<UserProviderProps> = ({children}) => {
 
     const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const user = localStorage.getItem("user");
         if (user) {
             setUser(JSON.parse(user));
+            setLoading(false);
         }
     }, []);
 
@@ -31,7 +33,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({children}) => {
     }, [user]);
 
     return (
-        <UserContext.Provider value={{user, login, logout}}>
+        <UserContext.Provider value={{user, loading, login, logout}}>
             {children}
         </UserContext.Provider>
     )
