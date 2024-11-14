@@ -1,0 +1,12 @@
+.home-items {
+    display: grid;
+    gap: 16px;
+    padding: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+@media (max-width: 600px) {
+    .home-items {
+        grid-template-columns: 1fr;
+    }
+}
