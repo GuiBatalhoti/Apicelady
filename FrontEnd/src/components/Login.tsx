@@ -3,10 +3,11 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../config/firebase";
 import { GoogleAuthProvider } from "firebase/auth";
 import GoogleButton from "react-google-button";
-import "../styles/Roboto.css";
 import "../styles/Login.css";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/userContext";
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import { Typography } from "@mui/material";
 
 export default function Login() {
 
@@ -39,9 +40,13 @@ return (
     <div className="container">
         <div>
             <div className="logo">
-                <h1 className="roboto-regular title">Bem vindo ao Apicelady!</h1>
-                <br/>
-                <p className="roboto-regular">Primeiro, faça login com sua conta Google</p>
+                <AccountBalanceIcon style={{ fontSize: 150, marginBottom: '5px' }}/>
+                <Typography variant="h3" component="div" sx={{ marginLeft: 'auto' }}>
+                    Bem vindo ao Apicelady!
+                </Typography>
+                <Typography variant="h6" component="div" sx={{ marginLeft: 'auto' }}>
+                    Primeiro, faça login com sua conta Google
+                </Typography>
             </div>
             <div className="googleButton">
                 <GoogleButton onClick={singInWithGoogle}/>
