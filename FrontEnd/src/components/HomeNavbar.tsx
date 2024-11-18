@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/userContext";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
-export default function Navbar() {
+export default function HomeNavbar() {
 
     const navigate = useNavigate();
     const { user, logout } = useUser();
