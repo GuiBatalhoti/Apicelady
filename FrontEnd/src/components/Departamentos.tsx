@@ -1,9 +1,10 @@
+import GenericTable from "./GenericTable";
 
 
 export default function Departamentos() {
     return (
         <div>
-            <h1>Departamentos</h1>
+            <GenericTable columns={[]} data={[]} />
         </div>
     )
 }

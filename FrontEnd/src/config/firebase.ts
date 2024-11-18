@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 const apiKey = import.meta.env.VITE_API_KEY;
 const firebaseConfig = {
@@ -14,5 +14,13 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+export const getPredios = async () => {
+  const prediosCollection = collection(db, 'predio');
+  const prediosSnapshot = await getDocs(prediosCollection);
+  const predios = prediosSnapshot.docs.map(doc => doc.data());
+  return predios;
+}
