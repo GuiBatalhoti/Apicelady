@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/userContext";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
-export default function HomeNavbar() {
+export default function Navbar() {
 
     const navigate = useNavigate();
     const { user, logout } = useUser();
@@ -20,7 +20,7 @@ export default function HomeNavbar() {
     return (
         <AppBar position="static">
             <Toolbar>
-                <IconButton edge="start" color="inherit" aria-label="name" size="large">
+                <IconButton edge="start" color="inherit" aria-label="name" size="large" onClick={handleClick("home")}>
                     <AccountBalanceIcon style={{marginRight:"5px"}}/>
                     Apicelady
                 </IconButton>
