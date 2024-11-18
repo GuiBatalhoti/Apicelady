@@ -8,11 +8,18 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/userContext";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { Typography } from "@mui/material";
+import { useEffect } from "react";
 
 export default function Login() {
 
     let { login } = useUser();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (checkLocalStorage()) {
+            navigate("/home");
+        }
+    }, [])
 
     const checkLocalStorage = () => {
         const user = localStorage.getItem("user");

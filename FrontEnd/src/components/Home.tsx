@@ -1,4 +1,3 @@
-import Navbar from "./Navbar";
 import { useUser } from "../context/userContext";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,20 +22,16 @@ export default function Home() {
         }
     }, []);
 
-    return (
-        <div>
-            <Navbar />
-            
-            <div className="home-page">
-                <div className="home-items">
-                    <HomeItem icon={<ApartmentIcon />} label="Prédios" path="/predios" />
-                    <HomeItem icon={<StoreIcon />} label="Departamentos" path="/departamentos" />
-                    <HomeItem icon={<MeetingRoomIcon />} label="Salas" path="/Salas" />
-                    <HomeItem icon={<ComputerIcon />} label="Bens" path="/bens" />
-                    <HomeItem icon={<PersonIcon />} label="Funcionários" path="/funcionarios" />
-                    <HomeItem icon={<AddToQueueIcon />} label="Conferências" path="/conferencias" />
-                    {/* <HomeItem icon={<ApartmentIcon />} label="Departamentos" path="/departamentos" /> */}
-                </div>
+    return (         
+        <div className="home-page">
+            <div className="home-items">
+                <HomeItem icon={<ApartmentIcon />} label="Prédios" path="/predios" />
+                <HomeItem icon={<StoreIcon />} label="Departamentos" path="/departamentos" />
+                <HomeItem icon={<MeetingRoomIcon />} label="Salas" path="/Salas" />
+                <HomeItem icon={<ComputerIcon />} label="Bens" path="/bens" />
+                <HomeItem icon={<PersonIcon />} label="Funcionários" path="/funcionarios" />
+                <HomeItem icon={<AddToQueueIcon />} label="Conferências" path="/conferencias" />
+                {/* <HomeItem icon={<ApartmentIcon />} label="Departamentos" path="/departamentos" /> */}
             </div>
         </div>
     )

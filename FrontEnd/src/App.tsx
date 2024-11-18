@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import { UserProvider } from "./context/userContext";
 import Login from "./components/Login";
 import NotFound from "./components/NotFoud";
 import Home from "./components/Home";
@@ -8,11 +7,16 @@ import Predios from "./components/Predios";
 import Bens from "./components/Bens";
 import Funcionarios from "./components/Funcionarios";
 import Conferencias from "./components/Conferencias";
+import { useUser } from "./context/userContext";
+import Navbar from "./components/Navbar";
 
 function App() {
 
+  const { user } = useUser();
+
   return (
-    <UserProvider>
+    <>
+      {user &&<Navbar/>}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
@@ -25,7 +29,7 @@ function App() {
         <Route path="/funcionarios" element={<Funcionarios />} />
         <Route path="/conferencias" element={<Conferencias />} />
       </Routes>
-    </UserProvider>
+    </>
   )
 }
 
