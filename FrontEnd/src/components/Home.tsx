@@ -1,4 +1,4 @@
-import HomeNavbar from "./HomeNavbar";
+import Navbar from "./Navbar";
 import { useUser } from "../context/userContext";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +25,7 @@ export default function Home() {
 
     return (
         <div>
-            <HomeNavbar />
+            <Navbar />
             
             <div className="home-page">
                 <div className="home-items">
