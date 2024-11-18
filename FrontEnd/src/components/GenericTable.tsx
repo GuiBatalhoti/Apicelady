@@ -8,8 +8,13 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 import { GenericTableProps } from '../types/GenericTableProps';
+import { IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import '../styles/GenericTable.css';
 
-function GenericTable<DataType>({ columns, data }: GenericTableProps<DataType>) {
+function GenericTable<DataType>({ columns, data, onEdit, onDelete }: GenericTableProps<DataType>) {
+  
   const VirtuosoTableComponents: TableComponents<DataType> = {
     Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
       <TableContainer component={Paper} {...props} ref={ref} />
@@ -29,6 +34,14 @@ function GenericTable<DataType>({ columns, data }: GenericTableProps<DataType>) 
   // Renderiza o cabeçalho fixo
   const fixedHeaderContent = () => (
     <TableRow>
+      <TableCell
+        key="actions-header"
+        variant="head"
+        style={{ width: 80 }}
+        sx={{ backgroundColor: 'background.paper' }}
+      >
+        Actions
+      </TableCell>
       {columns.map((column) => (
         <TableCell
           key={String(column.dataKey)}
@@ -43,15 +56,22 @@ function GenericTable<DataType>({ columns, data }: GenericTableProps<DataType>) 
     </TableRow>
   );
 
-  // Renderiza o conteúdo das linhas
   const rowContent = (_index: number, row: DataType) => (
     <React.Fragment>
+      <TableCell key="actions-cell" style={{ width: 80 }}>
+        <IconButton onClick={() => onEdit(row)} aria-label="edit">
+          <EditIcon className='edit-icon'/>
+        </IconButton>
+        <IconButton onClick={() => onDelete(row)} aria-label="delete">
+          <DeleteIcon className='delete-icon'/>
+        </IconButton>
+      </TableCell>
       {columns.map((column) => (
         <TableCell
           key={String(column.dataKey)}
           align={column.numeric ? 'right' : 'left'}
         >
-          {row[column.dataKey] as React.ReactNode}
+          {String(row[column.dataKey])}
         </TableCell>
       ))}
     </React.Fragment>
