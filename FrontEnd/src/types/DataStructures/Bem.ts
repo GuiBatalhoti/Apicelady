@@ -1,5 +1,5 @@
-
 export interface Bem {
+    docId: string,
     numero: number; //único
     descricao: string;
     data_aquisicao: string;

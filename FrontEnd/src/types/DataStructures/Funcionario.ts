@@ -1,5 +1,5 @@
 export interface Funcionario {
-    id: number;
+    docId: string,
     nome: string;
     email: string;
     endereco: string;

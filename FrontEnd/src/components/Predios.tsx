@@ -6,7 +6,7 @@ import GenericDialog from "./GenericDialog"; // Novo dialog genérico
 import ConfirmDialog from "./ConfirmDialog";
 import { Column } from "../types/GenericTableProps";
 import { Predio } from "../types/DataStructures/Predio";
-import { getAllPredios, deletePredio, createPredio, updatePredio } from "../config/firebase";
+import { getAllFromCollection, deleteItem, createItem, updateItem } from "../config/firebase";
 import { DocumentData } from "firebase/firestore";
 import "../styles/Predios.css";
 
@@ -33,8 +33,9 @@ export default function Predios() {
   ];
 
   useEffect(() => {
-    getAllPredios().then((data: DocumentData[]) => {
+    getAllFromCollection("predio").then((data: DocumentData[]) => {
       const predios: Predio[] = data.map((doc) => ({
+        docId: doc.id,
         nome: doc.nome,
         descricao: doc.descricao,
         endereco: doc.endereco,
@@ -81,20 +82,20 @@ export default function Predios() {
         Object.entries(item).filter(([_, value]) => value !== undefined)
       );
       setPredios((prevData) =>
-        prevData.map((predio) => (predio.nome === item.nome ? {...predio, ...sanitizedData} : predio))
+        prevData.map((predio) => (predio.docId === item.docId ? {...predio, ...sanitizedData} : predio))
       );
-      updatePredio(sanitizedData.nome, sanitizedData);
+      updateItem("predio", sanitizedData.docId, sanitizedData);
     } else {
       setPredios((prevData) => [...prevData, item]);
-      createPredio(item);
+      createItem("predio", item);
     }
     setDialogOpen(false);
   };
 
   const handleConfirmDelete = () => {
     if (selectedItem) {
-      setPredios((prevPredios) => prevPredios.filter((p) => p.nome !== selectedItem.nome));
-      deletePredio(selectedItem.nome);
+      setPredios((prevPredios) => prevPredios.filter((p) => p.docId !== selectedItem.docId));
+      deleteItem("predio", selectedItem.docId);
       setConfirmOpen(false);
       setSelectedItem(null);
     }
