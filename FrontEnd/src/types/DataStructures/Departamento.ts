@@ -1,4 +1,5 @@
 export interface Departamento {
+    docId: string,
     nome: string;
     descricao: string;
     sigla: string;

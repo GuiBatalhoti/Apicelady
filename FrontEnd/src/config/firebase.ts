@@ -2,6 +2,10 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { Predio } from "../types/DataStructures/Predio";
+import { Bem } from "../types/DataStructures/Bem";
+import { Departamento } from "../types/DataStructures/Departamento";
+import { Sala } from "../types/DataStructures/Sala";
+import { Funcionario } from "../types/DataStructures/Funcionario";
 
 const apiKey = import.meta.env.VITE_API_KEY;
 const firebaseConfig = {
@@ -19,48 +23,48 @@ const db = getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
-export const getAllPredios = async () => {
+export const getAllFromCollection = async (collectionName: string) => {
   try {
-    const prediosSnapshot = await getDocs(collection(db, "predio"));
+    const prediosSnapshot = await getDocs(collection(db, collectionName));
     const predios = prediosSnapshot.docs.map((doc) => ({
       id: doc.id, // Inclui o ID do documento
       ...doc.data(),
     }));
     return predios;
   } catch (error) {
-    console.error("Erro ao buscar prédios:", error);
+    console.error("Erro ao buscar:", error);
     throw error;
   }
 };
 
-export const createPredio = async (predio: Predio) => {
+export const createItem = async (collectionName: string, item: Predio | Bem | Departamento | Sala | Funcionario) => {
   try {
-    const docRef = await addDoc(collection(db, "predio"), predio);
+    const docRef = await addDoc(collection(db, collectionName), item);
     return docRef.id;
   } catch (error) {
-    console.error("Erro ao criar prédio:", error);
+    console.error("Erro ao criar:", error);
     throw error;
   }
 };
 
-export const updatePredio = async (id: string, updatedData: Partial<Predio>) => {
+export const updateItem = async (collectionName: string,id: string, updatedData: Partial<Predio | Bem | Departamento | Sala | Funcionario>) => {
   try {
-    const predioRef = doc(db, "predio", id);
+    const predioRef = doc(db, collectionName, id);
     await updateDoc(predioRef, updatedData);
-    console.log("Prédio atualizado com sucesso!");
+    console.log("Atualizado com sucesso!");
   } catch (error) {
-    console.error("Erro ao atualizar prédio:", error);
+    console.error("Erro ao atualizar:", error);
     throw error;
   }
 };
 
-export const deletePredio = async (id: string) => {
+export const deleteItem = async (collectionName: string, id: string) => {
   try {
-    const predioRef = doc(db, "predio", id);
+    const predioRef = doc(db, collectionName, id);
     await deleteDoc(predioRef);
-    console.log("Prédio deletado com sucesso!");
+    console.log("Deletado com sucesso!");
   } catch (error) {
-    console.error("Erro ao deletar prédio:", error);
+    console.error("Erro ao deletar:", error);
     throw error;
   }
 };

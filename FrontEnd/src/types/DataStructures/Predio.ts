@@ -1,4 +1,5 @@
 export interface Predio {
+    docId: string,
     nome: string; //único
     descricao: string;
     endereco: string;
