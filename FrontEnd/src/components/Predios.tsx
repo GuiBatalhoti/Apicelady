@@ -1,76 +1,150 @@
+import { useEffect, useState } from "react";
+import { Button, Typography } from "@mui/material";
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import GenericTable from "./GenericTable";
+import GenericDialog from "./GenericDialog"; // Novo dialog genérico
+import ConfirmDialog from "./ConfirmDialog";
 import { Column } from "../types/GenericTableProps";
 import { Predio } from "../types/DataStructures/Predio";
-import { getPredios } from "../config/firebase";
-import { useEffect, useState } from "react";
+import { getAllPredios, deletePredio, createPredio, updatePredio } from "../config/firebase";
 import { DocumentData } from "firebase/firestore";
-import { Button, Typography } from "@mui/material";
-import ApartmentIcon from '@mui/icons-material/Apartment';
 import "../styles/Predios.css";
 
 export default function Predios() {
+  const [predios, setPredios] = useState<Predio[]>([]);
+  const [selectedItem, setSelectedItem] = useState<Predio | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // Define se o dialog é para edição ou adição
 
-    const [predios, setPredios] = useState<Predio[]>([]);
+  const columns: Column<Predio>[] = [
+    { label: "Nome", dataKey: "nome", numeric: false, width: 100 },
+    { label: "Descrição", dataKey: "descricao", numeric: false, width: 300 },
+    { label: "Endereço", dataKey: "endereco", numeric: false, width: 150 },
+    { label: "Número", dataKey: "numero", numeric: true, width: 50 },
+    { label: "Bairro", dataKey: "bairro", numeric: false, width: 100 },
+    { label: "Cidade", dataKey: "cidade", numeric: false, width: 100 },
+    { label: "Estado", dataKey: "estado", numeric: false, width: 100 },
+    { label: "CEP", dataKey: "cep", numeric: false, width: 100 },
+    { label: "Latitude", dataKey: "latitude", numeric: true, width: 100 },
+    { label: "Longitude", dataKey: "longitude", numeric: true, width: 100 },
+    { label: "Capacidade", dataKey: "capacidade", numeric: true, width: 100 },
+    { label: "Área", dataKey: "area", numeric: true, width: 100 },
+  ];
 
-    const columns = [
-        { label: 'Nome', dataKey: 'nome', numeric: false, width: 100 },
-        { label: 'Descrição', dataKey: 'descricao', numeric: false, width: 300 },
-        { label: 'Endereço', dataKey: 'endereco', numeric: false, width: 150 },
-        { label: 'Número', dataKey: 'numero', numeric: true, width: 50 },
-        { label: 'Bairro', dataKey: 'bairro', numeric: false, width: 100 },
-        { label: 'Cidade', dataKey: 'cidade', numeric: false, width: 100 },
-        { label: 'Estado', dataKey: 'estado', numeric: false, width: 100 },
-        { label: 'CEP', dataKey: 'cep', numeric: false, width: 100 },
-        { label: 'Complemento', dataKey: 'complemento', numeric: false, width: 100 },
-        { label: 'Latitude', dataKey: 'latitude', numeric: true, width: 100 },
-        { label: 'Longitude', dataKey: 'longitude', numeric: true, width: 100 },
-        { label: 'Capacidade', dataKey: 'capacidade', numeric: true, width: 100 },
-        { label: 'Área', dataKey: 'area', numeric: true, width: 100 }
-    ] as Column<Predio>[];
+  useEffect(() => {
+    getAllPredios().then((data: DocumentData[]) => {
+      const predios: Predio[] = data.map((doc) => ({
+        nome: doc.nome,
+        descricao: doc.descricao,
+        endereco: doc.endereco,
+        numero: doc.numero,
+        bairro: doc.bairro,
+        cidade: doc.cidade,
+        estado: doc.estado,
+        cep: doc.cep,
+        complemento: doc.complemento,
+        latitude: doc.latitude,
+        longitude: doc.longitude,
+        capacidade: doc.capacidade,
+        area: doc.area,
+      }));
+      setPredios(predios);
+    });
+  }, []);
 
-    const handleOnAdicionarPredio = () => {
-        console.log("Adicionar prédio");
+  const handleOnAdicionarPredio = () => {
+    setSelectedItem(null); // Limpa o item selecionado
+    setIsEditing(false); // Define como adição
+    setDialogOpen(true);
+  };
+
+  const handleOnEdit = (predio: Predio) => {
+    setSelectedItem({ ...predio }); // Cria uma cópia do objeto para edição
+    setIsEditing(true); // Define como edição
+    setDialogOpen(true);
+  };
+
+  const handleOnDelete = (predio: Predio) => {
+    setSelectedItem({ ...predio });
+    setConfirmOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setSelectedItem(null);
+  };
+
+  const handleSave = (item: Predio) => {
+    if (isEditing) {
+      const sanitizedData = Object.fromEntries(
+        Object.entries(item).filter(([_, value]) => value !== undefined)
+      );
+      setPredios((prevData) =>
+        prevData.map((predio) => (predio.nome === item.nome ? {...predio, ...sanitizedData} : predio))
+      );
+      updatePredio(sanitizedData.nome, sanitizedData);
+    } else {
+      setPredios((prevData) => [...prevData, item]);
+      createPredio(item);
     }
+    setDialogOpen(false);
+  };
 
-    const handleOnEditarPredio = (predio: Predio) => {
-        alert(`Editar prédio ${JSON.stringify(predio)}`);
+  const handleConfirmDelete = () => {
+    if (selectedItem) {
+      setPredios((prevPredios) => prevPredios.filter((p) => p.nome !== selectedItem.nome));
+      deletePredio(selectedItem.nome);
+      setConfirmOpen(false);
+      setSelectedItem(null);
     }
+  };
 
-    const handleOnExcluirPredio = (predio: Predio) => {
-        console.log("Excluir prédio", predio);
-    }
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setSelectedItem(null);
+  };
 
-    useEffect(() => {
-        getPredios().then((data: DocumentData[]) => {
-            const predios: Predio[] = data.map(doc => ({
-                nome: doc.nome,
-                descricao: doc.descricao,
-                endereco: doc.endereco,
-                numero: doc.numero,
-                bairro: doc.bairro,
-                cidade: doc.cidade,
-                estado: doc.estado,
-                cep: doc.cep,
-                complemento: doc.complemento,
-                latitude: doc.latitude,
-                longitude: doc.longitude,
-                capacidade: doc.capacidade,
-                area: doc.area
-            }));
-            setPredios(predios);
-        });
-    }, []);
-    
-    return (
-        <div>
-            <div className="header">
-                <Typography variant="h4" className="nome-pagina"> 
-                    <ApartmentIcon className="icon" /> 
-                    Prédios
-                </Typography>
-                <Button variant="contained" className="button" onClick={handleOnAdicionarPredio}>Adicionar prédio</Button>
-            </div>
-            <GenericTable columns={columns} data={predios} onEdit={handleOnEditarPredio} onDelete={handleOnExcluirPredio} />
-        </div>
-    );
+  return (
+    <div>
+      <div className="header">
+        <Typography variant="h4" className="nome-pagina">
+          <ApartmentIcon className="icon" />
+          Prédios
+        </Typography>
+        <Button variant="contained" className="button" onClick={handleOnAdicionarPredio}>
+          Adicionar prédio
+        </Button>
+      </div>
+      <GenericTable columns={columns} data={predios} onEdit={handleOnEdit} onDelete={handleOnDelete} />
+      <ConfirmDialog
+        title="Confirmar Exclusão"
+        message={`Tem certeza que deseja excluir o prédio "${selectedItem?.nome}"?`}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        open={confirmOpen}
+      />
+      <GenericDialog
+        open={dialogOpen}
+        title={isEditing ? "Editar Prédio" : "Adicionar Prédio"}
+        item={selectedItem}
+        fields={[
+          { label: "Nome", key: "nome", type: "text" },
+          { label: "Descrição", key: "descricao", type: "text" },
+          { label: "Endereço", key: "endereco", type: "text" },
+          { label: "Número", key: "numero", type: "number" },
+          { label: "Bairro", key: "bairro", type: "text" },
+          { label: "Cidade", key: "cidade", type: "text" },
+          { label: "Estado", key: "estado", type: "text" },
+          { label: "CEP", key: "cep", type: "text" },
+          { label: "Capacidade", key: "capacidade", type: "number" },
+          { label: "Área", key: "area", type: "number" },
+          { label: "Latitude", key: "latitude", type: "number" },
+          { label: "Longitude", key: "longitude", type: "number" },
+        ]}
+        onClose={handleDialogClose}
+        onSave={handleSave}
+      />
+    </div>
+  );
 }
