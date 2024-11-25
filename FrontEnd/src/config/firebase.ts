@@ -60,8 +60,7 @@ export const updateItem = async (collectionName: string,id: string, updatedData:
 
 export const deleteItem = async (collectionName: string, id: string) => {
   try {
-    const predioRef = doc(db, collectionName, id);
-    await deleteDoc(predioRef);
+    await deleteDoc(doc(db, collectionName, id));
     console.log("Deletado com sucesso!");
   } catch (error) {
     console.error("Erro ao deletar:", error);
