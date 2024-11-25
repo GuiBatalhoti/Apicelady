@@ -2,6 +2,7 @@ export interface Field {
   label: string;
   key: string;
   type: "text" | "number";
+  defaultValue?: string;
 }
 
 export interface GenericDialogProps<T> {
