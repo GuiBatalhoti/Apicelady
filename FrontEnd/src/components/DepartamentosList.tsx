@@ -10,9 +10,10 @@ import { getAllFromCollection, deleteItem, createItem, updateItem } from "../con
 import { DocumentData } from "firebase/firestore";
 import "../styles/Departamentos.css"; // Estilo alterado para Departamentos
 
-export default function Departamentos() {
+export default function DepartamentosList() {
   const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
   const [selectedItem, setSelectedItem] = useState<Departamento | null>(null);
+  const [selectedRow, setSelectedRow] = useState<Departamento | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Define se o dialog é para edição ou adição
@@ -100,33 +101,45 @@ export default function Departamentos() {
           <StoreIcon className="icon" />
           Departamentos
         </Typography>
-        <Button variant="contained" className="button" onClick={handleOnAdicionarDepartamento}>
-          Adicionar Departamento
+          <Button variant="contained" className="button" onClick={handleOnAdicionarDepartamento}>
+            <StoreIcon className="icon" />
+            Adicionar Departamento
+          </Button>
+          <Button variant="contained" className="button" onClick={() => console.log("Abrindo salas para:", selectedRow)} disabled={!selectedRow}>
+          Abrir salas
         </Button>
       </div>
-      <GenericTable columns={columns} data={departamentos} onEdit={handleOnEdit} onDelete={handleOnDelete} />
-      <ConfirmDialog
-        title="Confirmar Exclusão"
-        message={`Tem certeza que deseja excluir o departamento "${selectedItem?.nome}"?`}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        open={confirmOpen}
-      />
-      <GenericDialog
-        open={dialogOpen}
-        title={isEditing ? "Editar Departamento" : "Adicionar Departamento"}
-        item={selectedItem}
-        fields={[
-          { label: "Nome", key: "nome", type: "text" },
-          { label: "Descrição", key: "descricao", type: "text" },
-          { label: "Sigla", key: "sigla", type: "text" },
-          { label: "Telefone", key: "telefone", type: "text" },
-          { label: "Email", key: "email", type: "text" },
-          { label: "Prédio", key: "predio", type: "text" },
-        ]}
-        onClose={handleDialogClose}
-        onSave={handleSave}
-      />
+      <div className="body">
+        <GenericTable 
+          columns={columns}
+          data={departamentos}
+          onEdit={handleOnEdit}
+          onDelete={handleOnDelete}
+          onSelectRow={(item) => setSelectedRow(item)} 
+        />
+        <ConfirmDialog
+          title="Confirmar Exclusão"
+          message={`Tem certeza que deseja excluir o departamento "${selectedItem?.nome}"?`}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          open={confirmOpen}
+        />
+        <GenericDialog
+          open={dialogOpen}
+          title={isEditing ? "Editar Departamento" : "Adicionar Departamento"}
+          item={selectedItem}
+          fields={[
+            { label: "Nome", key: "nome", type: "text" },
+            { label: "Descrição", key: "descricao", type: "text" },
+            { label: "Sigla", key: "sigla", type: "text" },
+            { label: "Telefone", key: "telefone", type: "text" },
+            { label: "Email", key: "email", type: "text" },
+            { label: "Prédio", key: "predio", type: "text" },
+          ]}
+          onClose={handleDialogClose}
+          onSave={handleSave}
+        />
+      </div>
     </div>
   );
 }
