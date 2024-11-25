@@ -83,7 +83,7 @@ export default function DepartamentosList() {
   const handleConfirmDelete = () => {
     if (selectedItem) {
       setDepartamentos((prevDepartamentos) => prevDepartamentos.filter((d) => d.nome !== selectedItem.nome));
-      deleteItem("departamento", selectedItem.nome);
+      deleteItem("departamento", selectedItem.docId);
       setConfirmOpen(false);
       setSelectedItem(null);
     }
