@@ -28,7 +28,7 @@ function App() {
         <Route path="/predio/:nome" element={<SalasList />} />
         <Route path="/departamentos" element={<DepartamentosList />} />
         <Route path="/salas" element={<SalasList />} />
-        <Route path="/salas:nome" element={<BensList />} />
+        <Route path="/predio/:nome/sala/:sigla" element={<BensList />} />
         <Route path="/bens" element={<BensList />} />
         <Route path="/funcionarios" element={<Funcionarios />} />
         <Route path="/conferencias" element={<Conferencias />} />
