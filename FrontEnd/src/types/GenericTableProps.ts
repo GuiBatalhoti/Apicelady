@@ -10,4 +10,5 @@ export interface GenericTableProps<DataType> {
     data: DataType[];
     onEdit: (data: DataType) => void;
     onDelete: (data: DataType) => void;
+    onSelectRow: (item: DataType | null) => void;
 }
