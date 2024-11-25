@@ -11,20 +11,31 @@ function GenericDialog<T extends Record<string, any>>({
   onSave,
 }: GenericDialogProps<T>) {
   const [currentItem, setCurrentItem] = React.useState<T>(() =>
-    item ? { ...item } : ({} as T)
+    item
+      ? { ...item }
+      : fields.reduce(
+          (acc, field) => ({ ...acc, [field.key]: field.defaultValue || "" }),
+          {} as T
+        )
   );
 
   React.useEffect(() => {
-    setCurrentItem(item ? { ...item } : ({} as T));
-  }, [item]);
+    setCurrentItem(
+      item
+        ? { ...item }
+        : fields.reduce(
+            (acc, field) => ({ ...acc, [field.key]: field.defaultValue || "" }),
+            {} as T
+          )
+    );
+  }, [item, fields]);
 
   const handleChange = (key: string, value: any, type: "text" | "number") => {
     let newValue = value;
 
     if (type === "number") {
-      // Remove caracteres inválidos
       newValue = value.replace(/[^0-9.-]/g, "");
-      if (newValue === "") newValue = null; // Permite campo vazio
+      if (newValue === "") newValue = null;
     }
 
     setCurrentItem((prev) => ({
@@ -34,6 +45,7 @@ function GenericDialog<T extends Record<string, any>>({
   };
 
   const handleSave = () => {
+    console.log("currentItem", currentItem);
     if (currentItem) onSave(currentItem);
   };
 
@@ -46,8 +58,8 @@ function GenericDialog<T extends Record<string, any>>({
             key={field.key}
             margin="dense"
             label={field.label}
-            type={field.type === "number" ? "text" : "text"} // Força "text" para validar números
-            value={currentItem?.[field.key] || ""}
+            type={field.type === "number" ? "text" : "text"}
+            value={currentItem?.[field.key]}
             onChange={(e) => handleChange(field.key, e.target.value, field.type)}
             fullWidth
           />
@@ -66,4 +78,3 @@ function GenericDialog<T extends Record<string, any>>({
 }
 
 export default GenericDialog;
-
