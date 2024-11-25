@@ -15,9 +15,10 @@ import { useNavigate, useParams } from "react-router-dom";
 export default function SalasList() {
 
   const navigate = useNavigate();
-  const { nome: nomePredio } = useParams();
+  let{ nome: nomePredio } = useParams();
+  nomePredio = nomePredio?.replace(/:/g, "");
 
-  const [salas, setSalas] = useState<Sala[]>([]);
+  const [salasList, setSalasList] = useState<Sala[]>([]);
   const [selectedItem, setSelectedItem] = useState<Sala | null>(null);
   const [selectedRow, setSelectedRow] = useState<Sala | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -26,11 +27,14 @@ export default function SalasList() {
 
   const columns: Column<Sala>[] = [
     { label: "Nome", dataKey: "nome", numeric: false, width: 100 },
-    { label: "Descrição", dataKey: "descricao", numeric: false, width: 300 },
     { label: "Sigla", dataKey: "sigla", numeric: false, width: 100 },
-    { label: "Telefone", dataKey: "telefone", numeric: false, width: 150 },
-    { label: "Email", dataKey: "email", numeric: false, width: 150 },
-    { label: "Prédio", dataKey: "predioNome", numeric: false, width: 150 }, // Mantido para referência de prédios
+    { label: "Número", dataKey: "numero", numeric: true, width: 100 },
+    { label: "Departamento", dataKey: "deptoSigla", numeric: false, width: 100 },
+    { label: "Descrição", dataKey: "descricao", numeric: false, width: 300 },
+    { label: "Prédio", dataKey: "predioNome", numeric: false, width: 100 },
+    { label: "Área", dataKey: "area", numeric: true, width: 100 },
+    { label: "Latitude", dataKey: "latitude", numeric: true, width: 100 },
+    { label: "Longitude", dataKey: "longitude", numeric: true, width: 100 },
   ];
 
   useEffect(() => {
@@ -38,22 +42,20 @@ export default function SalasList() {
         const salas: Sala[] = data.map((doc) => ({
           docId: doc.id,
           nome: doc.nome,
-          descricao: doc.descricao,
-          sigla: doc.sigla,
-          predio: doc.predio,
-          telefone: doc.telefone,
-          email: doc.email,
           numero: doc.numero,
+          descricao: doc.descricao,
+          deptoSigla: doc.deptoSigla,
           predioNome: doc.predioNome,
           area: doc.area,
           latitude: doc.latitude,
           longitude: doc.longitude,
+          sigla: doc.sigla,
         }));
         if (nomePredio) {
           console.log("Filtrando salas por predio:", nomePredio);
-          setSalas(salas.filter((sala) => String(sala.predioNome) === String(nomePredio)));
+          setSalasList(salas.filter((sala) => String(sala.predioNome) === String(nomePredio)));
         } else {
-          setSalas(salas);
+          setSalasList(salas);
         }
       });
   }, []);
@@ -63,6 +65,10 @@ export default function SalasList() {
     setIsEditing(false); // Define como adição
     setDialogOpen(true);
   };
+
+  const handleOnAbrirBens = () => {
+    navigate(`/salas/${selectedRow?.sigla}`);
+  }
 
   const handleOnEdit = (sala: Sala) => {
     setSelectedItem({ ...sala }); // Cria uma cópia do objeto para edição
@@ -85,12 +91,12 @@ export default function SalasList() {
       const sanitizedData = Object.fromEntries(
         Object.entries(item).filter(([_, value]) => value !== undefined)
       );
-      setSalas((prevData) =>
+      setSalasList((prevData) =>
         prevData.map((sala) => (sala.docId === item.docId ? { ...sala, ...sanitizedData } : sala))
       );
       updateItem("sala", sanitizedData.docId, sanitizedData);
     } else {
-      setSalas((prevData) => [...prevData, item]);
+      setSalasList((prevData) => [...prevData, item]);
       createItem("sala", item);
     }
     setDialogOpen(false);
@@ -98,7 +104,7 @@ export default function SalasList() {
 
   const handleConfirmDelete = () => {
     if (selectedItem) {
-      setSalas((prevsalas) => prevsalas.filter((d) => d.nome !== selectedItem.nome));
+      setSalasList((prevsalas) => prevsalas.filter((d) => d.nome !== selectedItem.nome));
       deleteItem("sala", selectedItem.nome);
       setConfirmOpen(false);
       setSelectedItem(null);
@@ -121,7 +127,7 @@ export default function SalasList() {
           <StoreIcon className="icon" />
           Adicionar Salas
         </Button>
-        <Button variant="contained" className="button" onClick={() => console.log("Abrindo salas para:", selectedRow)} disabled={!selectedRow}>
+        <Button variant="contained" className="button" onClick={handleOnAbrirBens} disabled={!selectedRow}>
           <ComputerIcon className="icon" />
           Abrir Bens
         </Button>
@@ -129,7 +135,7 @@ export default function SalasList() {
       <div className="body">
         <GenericTable 
           columns={columns}
-          data={salas}
+          data={salasList}
           onEdit={handleOnEdit}
           onDelete={handleOnDelete}
           onSelectRow={(item) => setSelectedRow(item)} 
@@ -145,14 +151,27 @@ export default function SalasList() {
           open={dialogOpen}
           title={isEditing ? "Editar Salas" : "Adicionar Salas"}
           item={selectedItem}
-          fields={[
-            { label: "Nome", key: "nome", type: "text" },
-            { label: "Descrição", key: "descricao", type: "text" },
-            { label: "Sigla", key: "sigla", type: "text" },
-            { label: "Telefone", key: "telefone", type: "text" },
-            { label: "Email", key: "email", type: "text" },
-            { label: "Prédio", key: "predioNome ", type: "text" },
-          ]}
+          fields={isEditing? 
+            [ { label: "Nome", key: "nome", type: "text" },
+              { label: "Sigla", key: "sigla", type: "text" },
+              { label: "Número", key: "numero", type: "number" },
+              { label: "Departamento", key: "depto", type: "text" },
+              { label: "Descrição", key: "descricao", type: "text" },
+              { label: "Prédio", key: "predioNome", type: "text" },
+              { label: "Área", key: "area", type: "number" },
+              { label: "Latitude", key: "latitude", type: "number" },
+              { label: "Longitude", key: "longitude", type: "number" }, ]
+            :
+            [ { label: "Nome", key: "nome", type: "text" },
+              { label: "Sigla", key: "sigla", type: "text" },
+              { label: "Número", key: "numero", type: "number" },
+              { label: "Departamento", key: "depto", type: "text" },
+              { label: "Descrição", key: "descricao", type: "text" },
+              { label: "Prédio", key: "predioNome", type: "text", defaultValue: nomePredio },
+              { label: "Área", key: "area", type: "number" },
+              { label: "Latitude", key: "latitude", type: "number" },
+              { label: "Longitude", key: "longitude", type: "number" }, ]
+          }
           onClose={handleDialogClose}
           onSave={handleSave}
         />
