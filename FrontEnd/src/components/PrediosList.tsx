@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Typography } from "@mui/material";
 import ApartmentIcon from "@mui/icons-material/Apartment";
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import GenericTable from "./GenericTable";
 import GenericDialog from "./GenericDialog"; // Novo dialog genérico
 import ConfirmDialog from "./ConfirmDialog";
@@ -9,10 +10,14 @@ import { Predio } from "../types/DataStructures/Predio";
 import { getAllFromCollection, deleteItem, createItem, updateItem } from "../config/firebase";
 import { DocumentData } from "firebase/firestore";
 import "../styles/Predios.css";
+import { useNavigate } from "react-router-dom";
 
-export default function Predios() {
+export default function PrediosList() {
+
+  const navigate = useNavigate();
   const [predios, setPredios] = useState<Predio[]>([]);
   const [selectedItem, setSelectedItem] = useState<Predio | null>(null);
+  const [selectedRow, setSelectedRow] = useState<Predio | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Define se o dialog é para edição ou adição
@@ -106,6 +111,10 @@ export default function Predios() {
     setSelectedItem(null);
   };
 
+  const handleOnAbrirSalas = () => {
+    navigate(`/predio/:${selectedRow?.nome}`);
+  }
+
   return (
     <div>
       <div className="header">
@@ -114,38 +123,51 @@ export default function Predios() {
           Prédios
         </Typography>
         <Button variant="contained" className="button" onClick={handleOnAdicionarPredio}>
+          <ApartmentIcon className="icon" />
           Adicionar prédio
         </Button>
+        <Button variant="contained" className="button" onClick={handleOnAbrirSalas} disabled={!selectedRow}>
+          <MeetingRoomIcon className="icon" />
+          Abrir Salas
+        </Button>
       </div>
-      <GenericTable columns={columns} data={predios} onEdit={handleOnEdit} onDelete={handleOnDelete} />
-      <ConfirmDialog
-        title="Confirmar Exclusão"
-        message={`Tem certeza que deseja excluir o prédio "${selectedItem?.nome}"?`}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        open={confirmOpen}
-      />
-      <GenericDialog
-        open={dialogOpen}
-        title={isEditing ? "Editar Prédio" : "Adicionar Prédio"}
-        item={selectedItem}
-        fields={[
-          { label: "Nome", key: "nome", type: "text" },
-          { label: "Descrição", key: "descricao", type: "text" },
-          { label: "Endereço", key: "endereco", type: "text" },
-          { label: "Número", key: "numero", type: "number" },
-          { label: "Bairro", key: "bairro", type: "text" },
-          { label: "Cidade", key: "cidade", type: "text" },
-          { label: "Estado", key: "estado", type: "text" },
-          { label: "CEP", key: "cep", type: "text" },
-          { label: "Capacidade", key: "capacidade", type: "number" },
-          { label: "Área", key: "area", type: "number" },
-          { label: "Latitude", key: "latitude", type: "number" },
-          { label: "Longitude", key: "longitude", type: "number" },
-        ]}
-        onClose={handleDialogClose}
-        onSave={handleSave}
-      />
+      <div className="body">
+        <GenericTable
+          columns={columns}
+          data={predios}
+          onEdit={handleOnEdit}
+          onDelete={handleOnDelete}
+          onSelectRow={(item) => setSelectedRow(item)} 
+        />
+        <ConfirmDialog
+          title="Confirmar Exclusão"
+          message={`Tem certeza que deseja excluir o prédio "${selectedItem?.nome}"?`}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          open={confirmOpen}
+        />
+        <GenericDialog
+          open={dialogOpen}
+          title={isEditing ? "Editar Prédio" : "Adicionar Prédio"}
+          item={selectedItem}
+          fields={[
+            { label: "Nome", key: "nome", type: "text" },
+            { label: "Descrição", key: "descricao", type: "text" },
+            { label: "Endereço", key: "endereco", type: "text" },
+            { label: "Número", key: "numero", type: "number" },
+            { label: "Bairro", key: "bairro", type: "text" },
+            { label: "Cidade", key: "cidade", type: "text" },
+            { label: "Estado", key: "estado", type: "text" },
+            { label: "CEP", key: "cep", type: "text" },
+            { label: "Capacidade", key: "capacidade", type: "number" },
+            { label: "Área", key: "area", type: "number" },
+            { label: "Latitude", key: "latitude", type: "number" },
+            { label: "Longitude", key: "longitude", type: "number" },
+          ]}
+          onClose={handleDialogClose}
+          onSave={handleSave}
+        />
+      </div>
     </div>
-  );
+  );  
 }

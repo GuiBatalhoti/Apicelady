@@ -31,7 +31,6 @@ export default function Home() {
                 <HomeItem icon={<ComputerIcon />} label="Bens" path="/bens" />
                 <HomeItem icon={<PersonIcon />} label="Funcionários" path="/funcionarios" />
                 <HomeItem icon={<AddToQueueIcon />} label="Conferências" path="/conferencias" />
-                {/* <HomeItem icon={<ApartmentIcon />} label="Departamentos" path="/departamentos" /> */}
             </div>
         </div>
     )
