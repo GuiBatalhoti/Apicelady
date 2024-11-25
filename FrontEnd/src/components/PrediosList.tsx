@@ -112,7 +112,7 @@ export default function PrediosList() {
   };
 
   const handleOnAbrirSalas = () => {
-    navigate(`/predio/:${selectedRow?.nome}`);
+    navigate(`/predio/${selectedRow?.nome}`);
   }
 
   return (

@@ -15,8 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 export default function SalasList() {
 
   const navigate = useNavigate();
-  let{ nome: nomePredio } = useParams();
-  nomePredio = nomePredio?.replace(/:/g, "");
+  const{ nome: nomePredio } = useParams();
 
   const [salasList, setSalasList] = useState<Sala[]>([]);
   const [selectedItem, setSelectedItem] = useState<Sala | null>(null);
@@ -67,7 +66,7 @@ export default function SalasList() {
   };
 
   const handleOnAbrirBens = () => {
-    navigate(`/salas/${selectedRow?.sigla}`);
+    navigate(`/predio/${selectedRow?.predioNome}/sala/${selectedRow?.sigla}`);
   }
 
   const handleOnEdit = (sala: Sala) => {
