@@ -1,8 +1,10 @@
 export interface Field {
   label: string;
   key: string;
-  type: "text" | "number";
+  type: "text" | "number" | "email" | "fone" | "date" | "dropdown";
   defaultValue?: string;
+  disabled: boolean;
+  options?: { label: string; value: string | number }[]
 }
 
 export interface GenericDialogProps<T> {
