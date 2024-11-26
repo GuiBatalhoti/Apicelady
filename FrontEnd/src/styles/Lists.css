@@ -1,20 +1,17 @@
 .header {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    margin: 0.8%;
-    margin-left: 10%;
-    margin-right: 10%;
+    align-items: center;
+    text-align: center;
+    margin: 2.5%;
 }
 
 .nome-pagina {
-    font-size: 50px;
     font-weight: bold;
-    margin: 10px;
 }
 
 .icon {
-    font-size: 50px;
+    vertical-align: middle;
 }
 
 .button {
