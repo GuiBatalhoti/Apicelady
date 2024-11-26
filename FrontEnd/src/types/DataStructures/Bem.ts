@@ -5,8 +5,8 @@ export interface Bem {
     data_aquisicao: string;
     valor_aquisicao: number;
     valor_presente: number;
-    status: string;
+    status: "ativo" | "baixado";
     condicao_uso: string;
-    localizacao: [string]; //histórico de localizações, a última é a atual; nome dos prédios
-    responsavel: [string]; //histórico de responsáveis, o último é o atual; sigla dos departamentos
+    localizacao: string[]; //histórico de localizações, a última é a atual; nome dos prédios
+    responsavel: string[]; //histórico de responsáveis, o último é o atual; sigla dos departamentos
 }
