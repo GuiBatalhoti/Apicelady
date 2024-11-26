@@ -27,7 +27,7 @@ export default function BemsList() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const [responsaveis, setResponsaveis] = useState<Departamento[]>([]);
+  const [deptoResponsaveis, setDeptoResponsaveis] = useState<Departamento[]>([]);
 
   const columns: Column<Bem>[] = [
     { label: "Número", dataKey: "numero", numeric: true, width: 100 },
@@ -76,7 +76,7 @@ export default function BemsList() {
         telefone: doc.telefone,
         email: doc.email,
       }));
-      setResponsaveis(departamentos);
+      setDeptoResponsaveis(departamentos);
     });
     setSelectedItem(null);
     setIsEditing(false);
@@ -97,7 +97,7 @@ export default function BemsList() {
   const handleDialogClose = () => {
     setDialogOpen(false);
     setSelectedItem(null);
-    setResponsaveis([]);
+    setDeptoResponsaveis([]);
   };
 
   const handleSave = (item: Bem) => {
@@ -200,7 +200,7 @@ export default function BemsList() {
               { label: "Condição de Uso", key: "condicao_uso", type: "text", disabled: false },
               { label: "Localização", key: "localizacao", type: "text", disabled: true, defaultValue: siglaSala },
               { label: "Responsável", key: "responsavel", type: "dropdown", disabled: false, options: [
-                ...responsaveis.map((d) => ({ label: d.sigla, value: d.sigla }))
+                ...deptoResponsaveis.map((d) => ({ label: d.sigla, value: d.sigla }))
               ]}
             ]
           }

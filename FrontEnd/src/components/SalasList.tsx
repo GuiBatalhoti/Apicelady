@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button, Typography } from "@mui/material";
-import StoreIcon from '@mui/icons-material/Store';
+import MeetingRoom from '@mui/icons-material/MeetingRoom';
 import ComputerIcon from '@mui/icons-material/Computer';
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import GenericTable from "./GenericTable";
 import GenericDialog from "./GenericDialog"; // Novo dialog genérico
 import ConfirmDialog from "./ConfirmDialog";
@@ -9,8 +10,10 @@ import { Column } from "../types/GenericTableProps";
 import { Sala } from "../types/DataStructures/Sala";
 import { getAllFromCollection, deleteItem, createItem, updateItem } from "../config/firebase";
 import { DocumentData } from "firebase/firestore";
-import "../styles/Salas.css"; // Estilo alterado para salas
+import "../styles/Lists.css"; // Estilo alterado para salas
 import { useNavigate, useParams } from "react-router-dom";
+import { Predio } from "../types/DataStructures/Predio";
+import { Departamento } from "../types/DataStructures/Departamento";
 
 export default function SalasList() {
 
@@ -24,10 +27,12 @@ export default function SalasList() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Define se o dialog é para edição ou adição
 
+  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+
   const columns: Column<Sala>[] = [
-    { label: "Nome", dataKey: "nome", numeric: false, width: 100 },
-    { label: "Sigla", dataKey: "sigla", numeric: false, width: 100 },
-    { label: "Número", dataKey: "numero", numeric: true, width: 100 },
+    { label: "Nome", dataKey: "nome", numeric: false, width: 150 },
+    { label: "Sigla", dataKey: "sigla", numeric: false, width: 40 },
+    { label: "Número", dataKey: "numero", numeric: true, width: 40 },
     { label: "Departamento", dataKey: "deptoSigla", numeric: false, width: 100 },
     { label: "Descrição", dataKey: "descricao", numeric: false, width: 300 },
     { label: "Prédio", dataKey: "predioNome", numeric: false, width: 100 },
@@ -60,8 +65,21 @@ export default function SalasList() {
   }, []);
 
   const handleOnAdicionarsala = () => {
-    setSelectedItem(null); // Limpa o item selecionado
-    setIsEditing(false); // Define como adição
+    getAllFromCollection("departamento").then((data: DocumentData[]) => {
+      const departamentos: Departamento[] = data.map((doc) => ({
+        docId: doc.id,
+        nome: doc.nome,
+        descricao: doc.descricao,
+        sigla: doc.sigla,
+        predio: doc.predio,
+        telefone: doc.telefone,
+        email: doc.email,
+      }));
+      setDepartamentos(departamentos);
+    });
+
+    setSelectedItem(null);
+    setIsEditing(false);
     setDialogOpen(true);
   };
 
@@ -70,6 +88,18 @@ export default function SalasList() {
   }
 
   const handleOnEdit = (sala: Sala) => {
+    getAllFromCollection("departamento").then((data: DocumentData[]) => {
+      const departamentos: Departamento[] = data.map((doc) => ({
+        docId: doc.id,
+        nome: doc.nome,
+        descricao: doc.descricao,
+        sigla: doc.sigla,
+        predio: doc.predio,
+        telefone: doc.telefone,
+        email: doc.email,
+      }));
+      setDepartamentos(departamentos);
+    });
     setSelectedItem({ ...sala }); // Cria uma cópia do objeto para edição
     setIsEditing(true); // Define como edição
     setDialogOpen(true);
@@ -115,15 +145,23 @@ export default function SalasList() {
     setSelectedItem(null);
   };
 
+  const handleOnVoltar = () => {
+    navigate(`/predios`);
+  };
+
   return (
     <div>
       <div className="header">
         <Typography variant="h4" className="nome-pagina">
-          <StoreIcon className="icon" />
+          <MeetingRoom className="icon" />
           Salas
         </Typography>
+        <Button variant="contained" className="button" onClick={handleOnVoltar}>
+          <ApartmentIcon className="icon" />
+          Voltar
+        </Button>
         <Button variant="contained" className="button" onClick={handleOnAdicionarsala}>
-          <StoreIcon className="icon" />
+          <MeetingRoom className="icon" fontSize="medium" />
           Adicionar Salas
         </Button>
         <Button variant="contained" className="button" onClick={handleOnAbrirBens} disabled={!selectedRow}>
@@ -151,25 +189,35 @@ export default function SalasList() {
           title={isEditing ? "Editar Salas" : "Adicionar Salas"}
           item={selectedItem}
           fields={isEditing? 
-            [ { label: "Nome", key: "nome", type: "text" },
-              { label: "Sigla", key: "sigla", type: "text" },
-              { label: "Número", key: "numero", type: "number" },
-              { label: "Departamento", key: "depto", type: "text" },
-              { label: "Descrição", key: "descricao", type: "text" },
-              { label: "Prédio", key: "predioNome", type: "text" },
-              { label: "Área", key: "area", type: "number" },
-              { label: "Latitude", key: "latitude", type: "number" },
-              { label: "Longitude", key: "longitude", type: "number" }, ]
+            [ 
+              { label: "Nome", key: "nome", type: "text", disabled: false },
+              { label: "Sigla", key: "sigla", type: "text", disabled: false },
+              { label: "Número", key: "numero", type: "number", disabled: false },
+              { label: "Departamento", key: "deptoSigla", type: "dropdown", disabled: false, options: [
+                ...departamentos.map((d) => ({ label: d.sigla, value: d.sigla }))
+              ], defaultValue: selectedItem?.deptoSigla
+              },
+              { label: "Descrição", key: "descricao", type: "text", disabled: false },
+              { label: "Prédio", key: "predioNome", type: "text", disabled: true },
+              { label: "Área", key: "area", type: "number", disabled: false },
+              { label: "Latitude", key: "latitude", type: "number", disabled: false },
+              { label: "Longitude", key: "longitude", type: "number", disabled: false }, 
+            ]
             :
-            [ { label: "Nome", key: "nome", type: "text" },
-              { label: "Sigla", key: "sigla", type: "text" },
-              { label: "Número", key: "numero", type: "number" },
-              { label: "Departamento", key: "depto", type: "text" },
-              { label: "Descrição", key: "descricao", type: "text" },
-              { label: "Prédio", key: "predioNome", type: "text", defaultValue: nomePredio },
-              { label: "Área", key: "area", type: "number" },
-              { label: "Latitude", key: "latitude", type: "number" },
-              { label: "Longitude", key: "longitude", type: "number" }, ]
+            [ 
+              { label: "Nome", key: "nome", type: "text", disabled: false },
+              { label: "Sigla", key: "sigla", type: "text", disabled: false },
+              { label: "Número", key: "numero", type: "number", disabled: false },
+              { label: "Departamento", key: "depto", type: "dropdown", disabled: false, options: [
+                ...departamentos.map((d) => ({ label: d.sigla, value: d.sigla }))
+              ]
+              },
+              { label: "Descrição", key: "descricao", type: "text", disabled: false },
+              { label: "Prédio", key: "predioNome", type: "text", defaultValue: nomePredio, disabled: true },
+              { label: "Área", key: "area", type: "number", disabled: false },
+              { label: "Latitude", key: "latitude", type: "number", disabled: false },
+              { label: "Longitude", key: "longitude", type: "number", disabled: false }, 
+            ]
           }
           onClose={handleDialogClose}
           onSave={handleSave}
