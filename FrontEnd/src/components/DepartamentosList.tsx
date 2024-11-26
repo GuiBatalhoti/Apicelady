@@ -8,7 +8,8 @@ import { Column } from "../types/GenericTableProps";
 import { Departamento } from "../types/DataStructures/Departamento"; // Alterado para Departamento
 import { getAllFromCollection, deleteItem, createItem, updateItem } from "../config/firebase";
 import { DocumentData } from "firebase/firestore";
-import "../styles/Departamentos.css"; // Estilo alterado para Departamentos
+import "../styles/Lists.css"; // Estilo alterado para Departamentos
+import { Predio } from "../types/DataStructures/Predio";
 
 export default function DepartamentosList() {
   const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
@@ -16,7 +17,9 @@ export default function DepartamentosList() {
   const [selectedRow, setSelectedRow] = useState<Departamento | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false); // Define se o dialog é para edição ou adição
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [predios, setPredios] = useState<Predio[]>([]);
 
   const columns: Column<Departamento>[] = [
     { label: "Nome", dataKey: "nome", numeric: false, width: 100 },
@@ -43,8 +46,27 @@ export default function DepartamentosList() {
   }, []);
 
   const handleOnAdicionarDepartamento = () => {
-    setSelectedItem(null); // Limpa o item selecionado
-    setIsEditing(false); // Define como adição
+    getAllFromCollection("predio").then((data: DocumentData[]) => {
+      const predios: Predio[] = data.map((doc) => ({
+        docId: doc.id,
+        nome: doc.nome,
+        descricao: doc.descricao,
+        endereco: doc.endereco,
+        numero: doc.numero,
+        bairro: doc.bairro,
+        cidade: doc.cidade,
+        estado: doc.estado,
+        cep: doc.cep,
+        complemento: doc.complemento,
+        latitude: doc.latitude,
+        longitude: doc.longitude,
+        capacidade: doc.capacidade,
+        area: doc.area,
+      }));
+      setPredios(predios);
+    });
+    setSelectedItem(null);
+    setIsEditing(false);
     setDialogOpen(true);
   };
 
@@ -102,12 +124,12 @@ export default function DepartamentosList() {
           Departamentos
         </Typography>
           <Button variant="contained" className="button" onClick={handleOnAdicionarDepartamento}>
-            <StoreIcon className="icon" />
+            <StoreIcon className="icon" fontSize="medium"/>
             Adicionar Departamento
           </Button>
-          <Button variant="contained" className="button" onClick={() => console.log("Abrindo salas para:", selectedRow)} disabled={!selectedRow}>
+          {/* <Button variant="contained" className="button" onClick={() => console.log("Abrindo salas para:", selectedRow)} disabled={!selectedRow}>
           Abrir salas
-        </Button>
+          </Button> */}
       </div>
       <div className="body">
         <GenericTable 
@@ -128,14 +150,28 @@ export default function DepartamentosList() {
           open={dialogOpen}
           title={isEditing ? "Editar Departamento" : "Adicionar Departamento"}
           item={selectedItem}
-          fields={[
-            { label: "Nome", key: "nome", type: "text" },
-            { label: "Descrição", key: "descricao", type: "text" },
-            { label: "Sigla", key: "sigla", type: "text" },
-            { label: "Telefone", key: "telefone", type: "text" },
-            { label: "Email", key: "email", type: "text" },
-            { label: "Prédio", key: "predio", type: "text" },
-          ]}
+          fields={ isEditing ? 
+            [
+              { label: "Nome", key: "nome", type: "text", disabled: true, },
+              { label: "Descrição", key: "descricao", type: "text", disabled: false, },
+              { label: "Sigla", key: "sigla", type: "text", disabled: false, },
+              { label: "Telefone", key: "telefone", type: "fone", disabled: false, },
+              { label: "Email", key: "email", type: "email", disabled: false, },
+              { label: "Prédio", key: "predio", type: "dropdown", disabled: false, options: [
+                ...predios.map((p) => ({ label: p.nome, value: p.nome }))
+              ], defaultValue: selectedItem?.predio },
+            ] :
+            [
+              { label: "Nome", key: "nome", type: "text", disabled: false, },
+              { label: "Descrição", key: "descricao", type: "text", disabled: false, },
+              { label: "Sigla", key: "sigla", type: "text", disabled: false, },
+              { label: "Telefone", key: "telefone", type: "fone", disabled: false, },
+              { label: "Email", key: "email", type: "email", disabled: false, },
+              { label: "Prédio", key: "predio", type: "dropdown", disabled: false, options: [
+                ...predios.map((p) => ({ label: p.nome, value: p.nome }))
+              ]},
+            ]
+          }
           onClose={handleDialogClose}
           onSave={handleSave}
         />

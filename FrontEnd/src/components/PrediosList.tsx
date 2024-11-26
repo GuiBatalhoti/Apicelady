@@ -9,7 +9,7 @@ import { Column } from "../types/GenericTableProps";
 import { Predio } from "../types/DataStructures/Predio";
 import { getAllFromCollection, deleteItem, createItem, updateItem } from "../config/firebase";
 import { DocumentData } from "firebase/firestore";
-import "../styles/Predios.css";
+import "../styles/Lists.css";
 import { useNavigate } from "react-router-dom";
 
 export default function PrediosList() {
@@ -123,7 +123,7 @@ export default function PrediosList() {
           Prédios
         </Typography>
         <Button variant="contained" className="button" onClick={handleOnAdicionarPredio}>
-          <ApartmentIcon className="icon" />
+          <ApartmentIcon className="icon" fontSize="medium" />
           Adicionar prédio
         </Button>
         <Button variant="contained" className="button" onClick={handleOnAbrirSalas} disabled={!selectedRow}>
@@ -150,20 +150,36 @@ export default function PrediosList() {
           open={dialogOpen}
           title={isEditing ? "Editar Prédio" : "Adicionar Prédio"}
           item={selectedItem}
-          fields={[
-            { label: "Nome", key: "nome", type: "text" },
-            { label: "Descrição", key: "descricao", type: "text" },
-            { label: "Endereço", key: "endereco", type: "text" },
-            { label: "Número", key: "numero", type: "number" },
-            { label: "Bairro", key: "bairro", type: "text" },
-            { label: "Cidade", key: "cidade", type: "text" },
-            { label: "Estado", key: "estado", type: "text" },
-            { label: "CEP", key: "cep", type: "text" },
-            { label: "Capacidade", key: "capacidade", type: "number" },
-            { label: "Área", key: "area", type: "number" },
-            { label: "Latitude", key: "latitude", type: "number" },
-            { label: "Longitude", key: "longitude", type: "number" },
-          ]}
+          fields={isEditing ?
+            [
+              { label: "Nome", key: "nome", type: "text", disabled: false },
+              { label: "Descrição", key: "descricao", type: "text", disabled: false },
+              { label: "Endereço", key: "endereco", type: "text", disabled: false },
+              { label: "Número", key: "numero", type: "number", disabled: false },
+              { label: "Bairro", key: "bairro", type: "text", disabled: false },
+              { label: "Cidade", key: "cidade", type: "text", disabled: false },
+              { label: "Estado", key: "estado", type: "text", disabled: false },
+              { label: "CEP", key: "cep", type: "text", disabled: false },
+              { label: "Latitude", key: "latitude", type: "number", disabled: false },
+              { label: "Longitude", key: "longitude", type: "number", disabled: false},
+              { label: "Capacidade", key: "capacidade", type: "number", disabled: false },
+              { label: "Área", key: "area", type: "number", disabled: false},
+            ] 
+            :
+            [
+              { label: "Nome", key: "nome", type: "text", disabled: false },
+              { label: "Descrição", key: "descricao", type: "text", disabled: false },
+              { label: "Endereço", key: "endereco", type: "text", disabled: false },
+              { label: "Número", key: "numero", type: "number", disabled: false },
+              { label: "Bairro", key: "bairro", type: "text", disabled: false},
+              { label: "Cidade", key: "cidade", type: "text", disabled: false},
+              { label: "Estado", key: "estado", type: "text", disabled: false},
+              { label: "CEP", key: "cep", type: "text", disabled: false },
+              { label: "Capacidade", key: "capacidade", type: "number", disabled: false},
+              { label: "Área", key: "area", type: "number", disabled: false },
+              { label: "Latitude", key: "latitude", type: "number", disabled: false },
+              { label: "Longitude", key: "longitude", type: "number", disabled: false },
+            ]}
           onClose={handleDialogClose}
           onSave={handleSave}
         />
