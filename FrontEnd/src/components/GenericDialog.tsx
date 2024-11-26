@@ -1,6 +1,14 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from "@mui/material";
-import { GenericDialogProps } from "../types/GenericDialogProps";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  MenuItem,
+} from "@mui/material";
+import { Field, GenericDialogProps } from "../types/GenericDialogProps";
 
 function GenericDialog<T extends Record<string, any>>({
   open,
@@ -30,17 +38,19 @@ function GenericDialog<T extends Record<string, any>>({
     );
   }, [item, fields]);
 
-  const handleChange = (key: string, value: any, type: "text" | "number") => {
+  const handleChange = (key: string, value: any, type: Field["type"]) => {
     let newValue = value;
 
     if (type === "number") {
-      newValue = value.replace(/[^0-9.-]/g, "");
+      newValue = value.replace(/[^0-9.-]/g, ""); // Permitir apenas números, ponto e hífen
       if (newValue === "") newValue = null;
+    } else if (type === "fone") {
+      newValue = value.replace(/[^0-9]/g, ""); // Permitir apenas números
     }
 
     setCurrentItem((prev) => ({
       ...prev,
-      [key]: type === "number" ? (newValue === null ? null : parseFloat(newValue)) : newValue,
+      [key]: newValue,
     }));
   };
 
@@ -49,21 +59,61 @@ function GenericDialog<T extends Record<string, any>>({
     if (currentItem) onSave(currentItem);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent, type: Field["type"]) => {
+    if (type === "number") {
+      const invalidKeys = ["e", "E", "+", " "]; // Bloquear entradas inválidas
+      if (invalidKeys.includes(event.key)) {
+        event.preventDefault();
+      }
+    }
+  };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        {fields.map((field) => (
-          <TextField
-            key={field.key}
-            margin="dense"
-            label={field.label}
-            type={field.type === "number" ? "text" : "text"}
-            value={currentItem?.[field.key]}
-            onChange={(e) => handleChange(field.key, e.target.value, field.type)}
-            fullWidth
-          />
-        ))}
+        {fields.map((field) => {
+          if (field.type === "dropdown") {
+            return (
+              <TextField
+                key={field.key}
+                margin="dense"
+                label={field.label}
+                select
+                value={currentItem?.[field.key] || ""}
+                onChange={(e) => handleChange(field.key, e.target.value, field.type)}
+                fullWidth
+                disabled={field.disabled}
+              >
+                {field.options?.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            );
+          }
+
+          return (
+            <TextField
+              key={field.key}
+              margin="dense"
+              label={field.label}
+              type={field.type === "date" ? "date" : field.type}
+              value={currentItem?.[field.key]}
+              onChange={(e) => handleChange(field.key, e.target.value, field.type)}
+              fullWidth
+              disabled={field.disabled}
+              slotProps={{
+                inputLabel: field.type === "date" ? { shrink: true } : undefined,
+                input: {
+                  ...(field.type === "number" && { inputMode: "numeric" }), // Indicar modo numérico para dispositivos móveis
+                },
+              }}
+              onKeyDown={(e) => handleKeyDown(e, field.type)} // Restringir teclas inválidas
+            />
+          );
+        })}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary">
