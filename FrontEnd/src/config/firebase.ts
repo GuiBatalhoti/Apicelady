@@ -25,12 +25,12 @@ export const googleProvider = new GoogleAuthProvider();
 
 export const getAllFromCollection = async (collectionName: string) => {
   try {
-    const prediosSnapshot = await getDocs(collection(db, collectionName));
-    const predios = prediosSnapshot.docs.map((doc) => ({
+    const dbCollectionResults = await getDocs(collection(db, collectionName));
+    const collectionItems = dbCollectionResults.docs.map((doc) => ({
       id: doc.id, // Inclui o ID do documento
       ...doc.data(),
     }));
-    return predios;
+    return collectionItems;
   } catch (error) {
     console.error("Erro ao buscar:", error);
     throw error;
