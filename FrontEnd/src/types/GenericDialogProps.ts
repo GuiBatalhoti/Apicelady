@@ -2,6 +2,7 @@ export interface Field {
   label: string;
   key: string;
   type: "text" | "number" | "email" | "fone" | "date" | "dropdown";
+  isArray?: boolean;
   defaultValue?: string;
   disabled: boolean;
   options?: { label: string; value: string | number }[]

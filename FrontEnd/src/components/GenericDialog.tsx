@@ -10,21 +10,16 @@ import {
 } from "@mui/material";
 import { Field, GenericDialogProps } from "../types/GenericDialogProps";
 
-function GenericDialog<T extends Record<string, any>>({
-  open,
-  title,
-  item,
-  fields,
-  onClose,
-  onSave,
-}: GenericDialogProps<T>) {
+function GenericDialog<T extends Record<string, any>>({ open, title, item, fields, onClose, onSave,}: GenericDialogProps<T>) {
+
   const [currentItem, setCurrentItem] = React.useState<T>(() =>
-    item
-      ? { ...item }
-      : fields.reduce(
-          (acc, field) => ({ ...acc, [field.key]: field.defaultValue || "" }),
-          {} as T
-        )
+    item? 
+    { ...item }
+    : 
+    fields.reduce(
+        (acc, field) => ({ ...acc, [field.key]: field.defaultValue || "" }),
+        {} as T 
+      )
   );
 
   React.useEffect(() => {
@@ -55,8 +50,18 @@ function GenericDialog<T extends Record<string, any>>({
   };
 
   const handleSave = () => {
-    console.log("currentItem", currentItem);
-    if (currentItem) onSave(currentItem);
+    const updatedItem = { ...currentItem };
+
+    fields.forEach((field) => {
+      if (field.isArray && Array.isArray(updatedItem[field.key])) {
+        const newValue = updatedItem[field.key];
+        if (newValue) {
+          (updatedItem as any)[field.key] = [...(updatedItem[field.key] || []), newValue];
+        }
+      }
+    });
+
+    if (updatedItem) onSave(updatedItem);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent, type: Field["type"]) => {
