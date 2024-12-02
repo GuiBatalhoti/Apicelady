@@ -12,7 +12,6 @@ import { getAllFromCollection, deleteItem, createItem, updateItem } from "../con
 import { DocumentData } from "firebase/firestore";
 import "../styles/Lists.css"; // Estilo alterado para salas
 import { useNavigate, useParams } from "react-router-dom";
-import { Predio } from "../types/DataStructures/Predio";
 import { Departamento } from "../types/DataStructures/Departamento";
 
 export default function SalasList() {
@@ -62,7 +61,7 @@ export default function SalasList() {
           setSalasList(salas);
         }
       });
-  }, []);
+  }, [nomePredio]);
 
   const handleOnAdicionarsala = () => {
     getAllFromCollection("departamento").then((data: DocumentData[]) => {
