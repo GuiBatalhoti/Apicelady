@@ -13,7 +13,7 @@ import NotFound from "./components/NotFoud";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { user } = useUser();
-  
+
   return user ? children : <Navigate to="/login" />;
 }
 
@@ -30,72 +30,70 @@ function App() {
         <Route path="*" element={<NotFound />} />
 
         {/* Rotas protegidas */}
-        <Route
-          path="/home"
+        <Route path="/home"
           element={
             <ProtectedRoute>
               <Home />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/predios"
+        <Route path="/predios"
           element={
             <ProtectedRoute>
               <PrediosList />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/predio/:nome"
+        <Route path="/predio/:nome"
           element={
             <ProtectedRoute>
               <SalasList />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/departamentos"
+        <Route path="/departamentos"
           element={
             <ProtectedRoute>
               <DepartamentosList />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/departamento/:sigla/funcionarios"
+        <Route path="/departamento/:sigla/funcionarios"
           element={
             <ProtectedRoute>
               <FuncionariosList />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/predio/:nome/sala/:sigla"
+        <Route path="/predio/:nome/sala/:sigla"
           element={
             <ProtectedRoute>
               <BensList />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/bens"
+        <Route path="/bens"
           element={
             <ProtectedRoute>
               <BensList />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/funcionarios"
+        <Route path="/funcionarios"
           element={
             <ProtectedRoute>
               <FuncionariosList />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/conferencias"
+        <Route path="/conferencias"
+          element={
+            <ProtectedRoute>
+              <ConferenciasList />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/conferencia/:dataRealizacao/:tipo/:local"
           element={
             <ProtectedRoute>
               <ConferenciasList />
