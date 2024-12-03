@@ -2,7 +2,7 @@ export interface Bem {
     docId: string,
     numero: number; //único
     descricao: string;
-    data_aquisicao: string;
+    data_aquisicao: Date;
     valor_aquisicao: number;
     valor_presente: number;
     status: "ativo" | "baixado";
