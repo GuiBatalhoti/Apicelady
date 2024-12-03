@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { GenericTableRowProps } from '../types/GenericTableProps';
 import "../styles/GenericTable.css"
 
-const GenericTableRow = <DataType extends Record<string, any>,>({ row,
+const GenericTableRow = <DataType extends Record<string, unknown>,>({ row,
   columns,
   isSelected,
   onSelect,
@@ -100,7 +100,7 @@ const GenericTableRow = <DataType extends Record<string, any>,>({ row,
                 )}
               </>
             ) : (
-              String(value)
+              value instanceof Date ? formatDate(value) : String(value)
             )}
           </TableCell>
         );
