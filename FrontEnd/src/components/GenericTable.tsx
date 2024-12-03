@@ -5,7 +5,15 @@ import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 import { GenericTableProps } from '../types/GenericTableProps';
 import GenericTableRow from './GenericTableRow';
 
-function GenericTable<DataType extends Record<string, any>>({ columns, data, onEdit, onDelete, onSelectRow }: GenericTableProps<DataType>) {
+function GenericTable<DataType extends Record<string, any>>({
+  columns,
+  data,
+  onEdit,
+  onDelete,
+  onSelectRow,
+  disableActionsColumn = false,
+  disableSelectColumn = false,
+}: GenericTableProps<DataType>) {
   const [selectedRow, setSelectedRow] = useState<DataType | null>(null);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [orderBy, setOrderBy] = useState<string | null>(null);
@@ -50,8 +58,12 @@ function GenericTable<DataType extends Record<string, any>>({ columns, data, onE
 
   const fixedHeaderContent = () => (
     <TableRow>
-      <TableCell style={{ width: 50 }}>Select</TableCell>
-      <TableCell style={{ width: 80 }}>Actions</TableCell>
+      {!disableSelectColumn && (
+        <TableCell style={{ width: 50 }}>Select</TableCell>
+      )}
+      {!disableActionsColumn && (
+        <TableCell style={{ width: 80 }}>Actions</TableCell>
+      )}
       {columns.map((column) => (
         <TableCell
           key={String(column.dataKey)}
@@ -82,8 +94,10 @@ function GenericTable<DataType extends Record<string, any>>({ columns, data, onE
             columns={columns}
             isSelected={row === selectedRow}
             onSelect={() => handleRowSelect(row)}
-            onEdit={onEdit}
-            onDelete={onDelete}
+            onEdit={onEdit?? (() => {})}
+            onDelete={onDelete?? (() => {})}
+            disableActionsColumn={disableActionsColumn}
+            disableSelectColumn={disableSelectColumn}
           />
         )}
       />

@@ -5,7 +5,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { GenericTableRowProps } from '../types/GenericTableProps';
 import "../styles/GenericTable.css"
 
-const GenericTableRow = <DataType extends Record<string, any>,>({ row, columns, isSelected, onSelect, onEdit, onDelete, }: GenericTableRowProps<DataType>) => {
+const GenericTableRow = <DataType extends Record<string, any>,>({ row,
+  columns,
+  isSelected,
+  onSelect,
+  onEdit,
+  onDelete,
+  disableActionsColumn = false,
+  disableSelectColumn = false,
+}: GenericTableRowProps<DataType>) => {
+
   const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
 
   const toggleRow = (index: number) => {
@@ -25,21 +34,25 @@ const GenericTableRow = <DataType extends Record<string, any>,>({ row, columns, 
 
   return (
     <>
-      <TableCell style={{ width: 15 }}>
-        <Radio
-          checked={isSelected}
-          onChange={onSelect}
-          inputProps={{ 'aria-label': 'select-row' }}
-        />
-      </TableCell>
-      <TableCell style={{ width: 15 }}>
-        <IconButton onClick={() => onEdit(row)} aria-label="edit">
-          <EditIcon className='edit-icon'/>
-        </IconButton>
-        <IconButton onClick={() => onDelete(row)} aria-label="delete">
-          <DeleteIcon className='delete-icon'/>
-        </IconButton>
-      </TableCell>
+      {!disableSelectColumn && (
+        <TableCell style={{ width: 20 }}>
+          <Radio
+            checked={isSelected}
+            onChange={onSelect}
+            inputProps={{ 'aria-label': 'select-row' }}
+          />
+        </TableCell>
+      )}
+      {!disableActionsColumn && (
+        <TableCell style={{ width: 20 }}>
+          <IconButton onClick={() => onEdit(row)} aria-label="edit">
+            <EditIcon className="edit-icon" />
+          </IconButton>
+          <IconButton onClick={() => onDelete(row)} aria-label="delete">
+            <DeleteIcon className="delete-icon"/>
+          </IconButton>
+        </TableCell>
+      )}
       {columns.map((column) => {
         const value = row[column.dataKey];
         const isArray = Array.isArray(value);

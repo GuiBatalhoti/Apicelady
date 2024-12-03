@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button, Typography } from "@mui/material";
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PersonIcon from "@mui/icons-material/Person";
 import StoreIcon from '@mui/icons-material/Store';
 import GenericTable from "./GenericTable";
@@ -158,10 +157,7 @@ export default function FuncionariosList() {
             Voltar Departamentos
           </Button>
           :
-          <Button variant="contained" className="button" onClick={() => handleOnVoltar("home")}>
-            <AccountBalanceIcon className="icon" />
-            Voltar Home
-          </Button>
+          null
         }
         <Button variant="contained" className="button" onClick={handleOnAdicionarfuncionario}>
           <PersonIcon className="icon" fontSize="medium" />
@@ -175,6 +171,7 @@ export default function FuncionariosList() {
           onEdit={handleOnEdit}
           onDelete={handleOnDelete}
           onSelectRow={(item) => setSelectedRow(item)}
+          disableSelectColumn={true}
         />
         <ConfirmDialog
           title="Confirmar Exclusão"
