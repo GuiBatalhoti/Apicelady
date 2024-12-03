@@ -36,7 +36,7 @@ export default function BemsList() {
         docId: doc.id,
         numero: doc.numero,
         descricao: doc.descricao,
-        data_aquisicao: doc.data_aquisicao,
+        data_aquisicao: new Timestamp(doc.data_aquisicao.seconds, doc.data_aquisicao.nanoseconds).toDate(),
         valor_aquisicao: doc.valor_aquisicao,
         valor_presente: doc.valor_presente,
         status: doc.status,
@@ -109,6 +109,7 @@ export default function BemsList() {
 
     const sanitizedItem: Bem = {
       ...item,
+      data_aquisicao: new Date(item.data_aquisicao),
       localizacao: localizacaoList, 
       responsavel: responsaveisList,
     };
