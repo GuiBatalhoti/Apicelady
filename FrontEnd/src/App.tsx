@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import SalasList from "./components/SalasList";
 import FuncionariosList from "./components/FuncionariosList";
 import NotFound from "./components/NotFoud";
+import BensConferidosList from "./components/BensConferidosList";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { user } = useUser();
@@ -96,7 +97,7 @@ function App() {
         <Route path="/conferencia/:dataRealizacao/:tipo/:local"
           element={
             <ProtectedRoute>
-              <ConferenciasList />
+              <BensConferidosList />
             </ProtectedRoute>
           }
         />

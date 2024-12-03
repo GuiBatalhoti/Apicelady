@@ -149,7 +149,7 @@ export default function FuncionariosList() {
       <div className="header">
         <Typography variant="h4" className="nome-pagina">
           <PersonIcon className="icon" />
-          Funcionarios
+          {deptoSigla ? `Funcionários do Departamento ${deptoSigla}` : "Funcionarios"}
         </Typography>
         {deptoSigla? 
           <Button variant="contained" className="button" onClick={() => handleOnVoltar("depto")}>
@@ -161,7 +161,7 @@ export default function FuncionariosList() {
         }
         <Button variant="contained" className="button" onClick={handleOnAdicionarfuncionario}>
           <PersonIcon className="icon" fontSize="medium" />
-          Adicionar funcionarios
+          Adicionar Funcionários
         </Button>
       </div>
       <div className="body">
