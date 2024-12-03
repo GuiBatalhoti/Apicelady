@@ -7,7 +7,7 @@ import GenericTable from "./GenericTable";
 import GenericDialog from "./GenericDialog"; // Novo dialog genérico
 import { Column } from "../types/GenericTableProps";
 import { getAllFromCollection, createItem } from "../config/firebase";
-import { DocumentData } from "firebase/firestore";
+import { DocumentData, Timestamp } from "firebase/firestore";
 import "../styles/Lists.css"; // Estilo alterado para conferencias
 import { useNavigate } from "react-router-dom";
 import { Conferencia } from "../types/DataStructures/Conferencia";
@@ -35,8 +35,7 @@ export default function ConferenciaList() {
       getAllFromCollection("conferencia").then((data: DocumentData[]) => {
         const conferencias: Conferencia[] = data.map((doc) => ({
           docId: doc.id,
-          dataSolicitacao: doc.dataSolicitacao,
-          dataLimite: doc.dataLimite,
+          dataSolicitacao: new Timestamp((doc.dataSolicitacao as Timestamp).seconds, (doc.dataSolicitacao as Timestamp).nanoseconds).toDate(),
           dataRealizacao: doc.dataRealizacao,
           tipo: doc.tipo,
           local: doc.local,
@@ -84,7 +83,7 @@ export default function ConferenciaList() {
     const novaConferencia: Conferencia = {
       docId: "",
       dataSolicitacao: new Date(item.dataSolicitacao),
-      dataRealizacao: new Date(item.dataRealizacao),
+      dataRealizacao: "A DEFINIR",
       tipo: item.tipo,
       local: item.local,
       bensRegistrados: [],
