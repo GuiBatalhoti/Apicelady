@@ -127,9 +127,10 @@ export default function DepartamentosList() {
             <StoreIcon className="icon" fontSize="medium"/>
             Adicionar Departamento
           </Button>
-          {/* <Button variant="contained" className="button" onClick={() => console.log("Abrindo salas para:", selectedRow)} disabled={!selectedRow}>
+          <Button variant="contained" className="button" onClick={() => console.log("Abrindo salas para:", selectedRow)} disabled={!selectedRow}>
+            
           Abrir salas
-          </Button> */}
+          </Button>
       </div>
       <div className="body">
         <GenericTable 
