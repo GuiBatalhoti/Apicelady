@@ -153,7 +153,7 @@ export default function SalasList() {
       <div className="header">
         <Typography variant="h4" className="nome-pagina">
           <MeetingRoom className="icon" />
-          Salas
+          {nomePredio ? `Salas do Prédio ${nomePredio}` : "Salas"}
         </Typography>
         <Button variant="contained" className="button" onClick={handleOnVoltar}>
           <ApartmentIcon className="icon" />

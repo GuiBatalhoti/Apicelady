@@ -83,7 +83,7 @@ function GenericTable<DataType extends Record<string, any>>({
   );
 
   return (
-    <Paper style={{ height: 400, width: '100%' }}>
+    <Paper style={{ height: 600, width: '100%' }}>
       <TableVirtuoso
         data={sortedData}
         components={VirtuosoTableComponents}
@@ -94,7 +94,7 @@ function GenericTable<DataType extends Record<string, any>>({
             columns={columns}
             isSelected={row === selectedRow}
             onSelect={() => handleRowSelect(row)}
-            onEdit={onEdit?? (() => {})}
+            onEdit={onEdit ?? (() => { })}
             onDelete={onDelete?? (() => {})}
             disableActionsColumn={disableActionsColumn}
             disableSelectColumn={disableSelectColumn}

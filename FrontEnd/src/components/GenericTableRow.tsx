@@ -62,10 +62,10 @@ const GenericTableRow = <DataType extends Record<string, unknown>,>({ row,
             {isArray ? (
               <>
                 <div>
-                  {Object.values(value[value.length - 1])
+                    {value.length > 0 && Object.values(value[value.length - 1])
                     .map((field) => {
                       if (field instanceof Date) {
-                        return formatDate(field);
+                      return formatDate(field);
                       }
                       return String(field);
                     })
@@ -75,28 +75,32 @@ const GenericTableRow = <DataType extends Record<string, unknown>,>({ row,
                   </IconButton>
                 </div>
                 {expandedRows[value.length] && (
-                  <div style={{ marginTop: 8 }}>
-                    {value.slice(0, -1).map((item: Record<string, any>, idx: number) => (
+                  <>
+                    {value.length > 1 && (
+                    <div style={{ marginTop: 8 }}>
+                      {value.slice(0, -1).map((item: Record<string, any>, idx: number) => (
                       <div
                         key={idx}
                         style={{
-                          fontSize: '0.9em',
-                          color: 'gray',
-                          display: 'flex',
-                          gap: '8px',
+                        fontSize: '0.9em',
+                        color: 'gray',
+                        display: 'flex',
+                        gap: '8px',
                         }}
                       >
                         {Object.values(item)
-                          .map((field: any) => {
-                            if (field instanceof Date) {
-                              return formatDate(field);
-                            }
-                            return String(field);
-                          })
-                          .join(' ')}
+                        .map((field: any) => {
+                          if (field instanceof Date) {
+                          return formatDate(field);
+                          }
+                          return String(field);
+                        })
+                        .join(' ')}
                       </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                    )}
+                  </>
                 )}
               </>
             ) : (

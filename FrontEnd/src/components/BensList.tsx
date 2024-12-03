@@ -49,6 +49,10 @@ export default function BemsList() {
           data: new Timestamp(resp.data.seconds, resp.data.nanoseconds).toDate(),
           atributo: resp.atributo,
         }) : resp),
+        conferido: doc.conferido ? doc.conferido.map((conf: any) => conf.data ? ({
+          data: new Timestamp(conf.data.seconds, conf.data.nanoseconds).toDate(),
+          atributo: conf.atributo,
+        }) : conf) : [],
       }));
       if (nomePredio) {
         console.log("Filtrando Bems por prédio e sala:", nomePredio, siglaSala);
@@ -208,7 +212,7 @@ export default function BemsList() {
       <div className="header">
         <Typography variant="h4" className="nome-pagina" >
           <ComputerIcon  className="icon" fontSize="medium"/>
-          Bem
+          {siglaSala ? `Bens da Sala ${siglaSala}` : "Bens"}
         </Typography>
         <Button variant="contained" className="button" onClick={handleOnVoltar}>
           <MeetingRoom />
@@ -236,6 +240,7 @@ export default function BemsList() {
             { label: "Condição de Uso", dataKey: "condicao_uso", numeric: false, width: 100 },
             { label: "Localização", dataKey: "localizacao", numeric: false, width: 180 },
             { label: "Responsável", dataKey: "responsavel", numeric: false, width: 180 },
+            { label: "Conferido", dataKey: "conferido", numeric: false, width: 180 }
             ]
           }
           data={bemsList}
