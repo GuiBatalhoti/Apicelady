@@ -7,58 +7,62 @@ import GenericTable from "./GenericTable";
 import GenericDialog from "./GenericDialog"; // Novo dialog genérico
 import ConfirmDialog from "./ConfirmDialog";
 import { Column } from "../types/GenericTableProps";
-import { Funcionario } from "../types/DataStructures/Funcionario";
+import { Sala } from "../types/DataStructures/Sala";
 import { getAllFromCollection, deleteItem, createItem, updateItem } from "../config/firebase";
 import { DocumentData } from "firebase/firestore";
-import "../styles/Lists.css"; // Estilo alterado para funcionarios
-import { useNavigate, useParams } from "react-router-dom";
+import "../styles/Lists.css"; // Estilo alterado para salas
+import { useNavigate } from "react-router-dom";
 import { Departamento } from "../types/DataStructures/Departamento";
 
-export default function FuncionariosList() {
+export default function ConferenciasList() {
 
   const navigate = useNavigate();
-  const{ nome: nomePredio } = useParams();
 
-  const [funcionariosList, setfuncionariosList] = useState<Funcionario[]>([]);
-  const [selectedItem, setSelectedItem] = useState<Funcionario | null>(null);
-  const [selectedRow, setSelectedRow] = useState<Funcionario | null>(null);
+  const [salasList, setSalasList] = useState<Sala[]>([]);
+  const [selectedItem, setSelectedItem] = useState<Sala | null>(null);
+  const [selectedRow, setSelectedRow] = useState<Sala | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Define se o dialog é para edição ou adição
 
   const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
 
-  const columns: Column<Funcionario>[] = [
+  const columns: Column<Sala>[] = [
     { label: "Nome", dataKey: "nome", numeric: false, width: 150 },
-    { label: "Email", dataKey: "email", numeric: false, width: 150 },
-    { label: "Endereço", dataKey: "endereco", numeric: false, width: 150 },
-    { label: "Departaento", dataKey: "deptoSigla", numeric: false, width: 100 },
-    { label: "Cargo", dataKey: "cargo", numeric: false, width: 100 },
-    { label: "Função", dataKey: "funcao", numeric: false, width: 100 },
-  ]
-    
+    { label: "Sigla", dataKey: "sigla", numeric: false, width: 40 },
+    { label: "Número", dataKey: "numero", numeric: true, width: 40 },
+    { label: "Departamento", dataKey: "deptoSigla", numeric: false, width: 100 },
+    { label: "Descrição", dataKey: "descricao", numeric: false, width: 300 },
+    { label: "Prédio", dataKey: "predioNome", numeric: false, width: 100 },
+    { label: "Área", dataKey: "area", numeric: true, width: 100 },
+    { label: "Latitude", dataKey: "latitude", numeric: true, width: 100 },
+    { label: "Longitude", dataKey: "longitude", numeric: true, width: 100 },
+  ];
 
   useEffect(() => {
-      getAllFromCollection("funcionario").then((data: DocumentData[]) => {
-        const funcionarios: Funcionario[] = data.map((doc) => ({
-            docId: doc.id,
-            nome: doc.nome,
-            email: doc.email,
-            endereco: doc.endereco,
-            deptoSigla: doc.deptoSigla,
-            cargo: doc.cargo,
-            funcao: doc.funcao,
-            }));
+      getAllFromCollection("sala").then((data: DocumentData[]) => {
+        const salas: Sala[] = data.map((doc) => ({
+          docId: doc.id,
+          nome: doc.nome,
+          numero: doc.numero,
+          descricao: doc.descricao,
+          deptoSigla: doc.deptoSigla,
+          predioNome: doc.predioNome,
+          area: doc.area,
+          latitude: doc.latitude,
+          longitude: doc.longitude,
+          sigla: doc.sigla,
+        }));
         if (nomePredio) {
-            console.log("Filtrando funcionarios por predio:", nomePredio);
-            setfuncionariosList(funcionarios.filter((funcionario) => String(funcionario.predioNome) === String(nomePredio)));
+          console.log("Filtrando salas por predio:", nomePredio);
+          setSalasList(salas.filter((sala) => String(sala.predioNome) === String(nomePredio)));
         } else {
-            setfuncionariosList(funcionarios);
+          setSalasList(salas);
         }
       });
   }, [nomePredio]);
 
-  const handleOnAdicionarfuncionario = () => {
+  const handleOnAdicionarsala = () => {
     getAllFromCollection("departamento").then((data: DocumentData[]) => {
       const departamentos: Departamento[] = data.map((doc) => ({
         docId: doc.id,
@@ -78,10 +82,10 @@ export default function FuncionariosList() {
   };
 
   const handleOnAbrirBens = () => {
-    navigate(`/predio/${selectedRow?.predioNome}/funcionario/${selectedRow?.sigla}`);
+    navigate(`/predio/${selectedRow?.predioNome}/sala/${selectedRow?.sigla}`);
   }
 
-  const handleOnEdit = (funcionario: Funcionario) => {
+  const handleOnEdit = (sala: Sala) => {
     getAllFromCollection("departamento").then((data: DocumentData[]) => {
       const departamentos: Departamento[] = data.map((doc) => ({
         docId: doc.id,
@@ -94,13 +98,13 @@ export default function FuncionariosList() {
       }));
       setDepartamentos(departamentos);
     });
-    setSelectedItem({ ...funcionario }); // Cria uma cópia do objeto para edição
+    setSelectedItem({ ...sala }); // Cria uma cópia do objeto para edição
     setIsEditing(true); // Define como edição
     setDialogOpen(true);
   };
 
-  const handleOnDelete = (funcionario: Funcionario) => {
-    setSelectedItem({ ...funcionario });
+  const handleOnDelete = (sala: Sala) => {
+    setSelectedItem({ ...sala });
     setConfirmOpen(true);
   };
 
@@ -109,26 +113,26 @@ export default function FuncionariosList() {
     setSelectedItem(null);
   };
 
-  const handleSave = (item: Funcionario) => {
+  const handleSave = (item: Sala) => {
     if (isEditing) {
       const sanitizedData = Object.fromEntries(
         Object.entries(item).filter(([_, value]) => value !== undefined)
       );
-      setfuncionariosList((prevData) =>
-        prevData.map((funcionario) => (funcionario.docId === item.docId ? { ...funcionario, ...sanitizedData } : funcionario))
+      setSalasList((prevData) =>
+        prevData.map((sala) => (sala.docId === item.docId ? { ...sala, ...sanitizedData } : sala))
       );
-      updateItem("funcionario", sanitizedData.docId, sanitizedData);
+      updateItem("sala", sanitizedData.docId, sanitizedData);
     } else {
-      setfuncionariosList((prevData) => [...prevData, item]);
-      createItem("funcionario", item);
+      setSalasList((prevData) => [...prevData, item]);
+      createItem("sala", item);
     }
     setDialogOpen(false);
   };
 
   const handleConfirmDelete = () => {
     if (selectedItem) {
-      setfuncionariosList((prevfuncionarios) => prevfuncionarios.filter((d) => d.nome !== selectedItem.nome));
-      deleteItem("funcionario", selectedItem.nome);
+      setSalasList((prevsalas) => prevsalas.filter((d) => d.nome !== selectedItem.nome));
+      deleteItem("sala", selectedItem.nome);
       setConfirmOpen(false);
       setSelectedItem(null);
     }
@@ -148,15 +152,15 @@ export default function FuncionariosList() {
       <div className="header">
         <Typography variant="h4" className="nome-pagina">
           <MeetingRoom className="icon" />
-          funcionarios
+          Salas
         </Typography>
         <Button variant="contained" className="button" onClick={handleOnVoltar}>
           <ApartmentIcon className="icon" />
           Voltar
         </Button>
-        <Button variant="contained" className="button" onClick={handleOnAdicionarfuncionario}>
+        <Button variant="contained" className="button" onClick={handleOnAdicionarsala}>
           <MeetingRoom className="icon" fontSize="medium" />
-          Adicionar funcionarios
+          Adicionar Salas
         </Button>
         <Button variant="contained" className="button" onClick={handleOnAbrirBens} disabled={!selectedRow}>
           <ComputerIcon className="icon" />
@@ -166,21 +170,21 @@ export default function FuncionariosList() {
       <div className="body">
         <GenericTable 
           columns={columns}
-          data={funcionariosList}
+          data={salasList}
           onEdit={handleOnEdit}
           onDelete={handleOnDelete}
           onSelectRow={(item) => setSelectedRow(item)} 
         />
         <ConfirmDialog
           title="Confirmar Exclusão"
-          message={`Tem certeza que deseja excluir a funcionario "${selectedItem?.nome}"?`}
+          message={`Tem certeza que deseja excluir a sala "${selectedItem?.nome}"?`}
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
           open={confirmOpen}
         />
         <GenericDialog
           open={dialogOpen}
-          title={isEditing ? "Editar funcionarios" : "Adicionar funcionarios"}
+          title={isEditing ? "Editar Salas" : "Adicionar Salas"}
           item={selectedItem}
           fields={isEditing? 
             [ 

@@ -5,11 +5,11 @@ import Home from "./components/Home";
 import DepartamentosList from "./components/DepartamentosList";
 import PrediosList from "./components/PrediosList";
 import BensList from "./components/BensList";
-import Funcionarios from "./components/Funcionarios";
-import Conferencias from "./components/Conferencias";
+import ConferenciasList from "./components/ConferenciasList";
 import { useUser } from "./context/userContext";
 import Navbar from "./components/Navbar";
 import SalasList from "./components/SalasList";
+import FuncionariosList from "./components/FuncionariosList";
 
 function App() {
 
@@ -30,8 +30,8 @@ function App() {
         {/* <Route path="/salas" element={<SalasList />} /> */}
         <Route path="/predio/:nome/sala/:sigla" element={<BensList />} />
         <Route path="/bens" element={<BensList />} />
-        <Route path="/funcionarios" element={<Funcionarios />} />
-        <Route path="/conferencias" element={<Conferencias />} />
+        <Route path="/funcionarios" element={<FuncionariosList />} />
+        <Route path="/conferencias" element={<ConferenciasList />} />
       </Routes>
     </>
   )
