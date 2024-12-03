@@ -3,8 +3,7 @@ export interface Funcionario {
     nome: string;
     email: string;
     endereco: string;
-    departamento: string;
+    deptoSigla: string;
     cargo: string;
     funcao: string
-    departamento_sigla: string;
 }
