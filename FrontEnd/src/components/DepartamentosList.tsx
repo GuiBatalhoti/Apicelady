@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Typography } from "@mui/material";
 import StoreIcon from '@mui/icons-material/Store';
+import PersonIcon from '@mui/icons-material/Person';
 import GenericTable from "./GenericTable";
 import GenericDialog from "./GenericDialog"; // Novo dialog genérico
 import ConfirmDialog from "./ConfirmDialog";
@@ -10,6 +11,7 @@ import { getAllFromCollection, deleteItem, createItem, updateItem } from "../con
 import { DocumentData } from "firebase/firestore";
 import "../styles/Lists.css"; // Estilo alterado para Departamentos
 import { Predio } from "../types/DataStructures/Predio";
+import { useNavigate } from "react-router-dom";
 
 export default function DepartamentosList() {
   const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
@@ -20,6 +22,7 @@ export default function DepartamentosList() {
   const [isEditing, setIsEditing] = useState(false);
 
   const [predios, setPredios] = useState<Predio[]>([]);
+  const navigate = useNavigate();
 
   const columns: Column<Departamento>[] = [
     { label: "Nome", dataKey: "nome", numeric: false, width: 100 },
@@ -69,6 +72,10 @@ export default function DepartamentosList() {
     setIsEditing(false);
     setDialogOpen(true);
   };
+
+  const handleOnAbrirFuncionarios = () => {
+    navigate(`/departamento/${selectedRow?.sigla}/funcionarios`);
+  }
 
   const handleOnEdit = (departamento: Departamento) => {
     setSelectedItem({ ...departamento }); // Cria uma cópia do objeto para edição
@@ -127,9 +134,9 @@ export default function DepartamentosList() {
             <StoreIcon className="icon" fontSize="medium"/>
             Adicionar Departamento
           </Button>
-          <Button variant="contained" className="button" onClick={() => console.log("Abrindo salas para:", selectedRow)} disabled={!selectedRow}>
-            
-          Abrir salas
+          <Button variant="contained" className="button" onClick={handleOnAbrirFuncionarios} disabled={!selectedRow}>
+            <PersonIcon className="icon" fontSize="medium"/>
+            Abrir Funcionários
           </Button>
       </div>
       <div className="body">
