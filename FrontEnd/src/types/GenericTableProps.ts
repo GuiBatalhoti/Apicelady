@@ -6,12 +6,15 @@ export interface Column<DataType> {
 }
 
 export interface GenericTableProps<DataType> {
-    columns: Column<DataType>[];
+    columns: Array<{ dataKey: string; numeric?: boolean; label: string; width?: number }>;
     data: DataType[];
-    onEdit: (data: DataType) => void;
-    onDelete: (data: DataType) => void;
-    onSelectRow: (item: DataType | null) => void;
-}
+    onEdit?: (row: DataType) => void;
+    onDelete?: (row: DataType) => void;
+    onSelectRow?: (row: DataType | null) => void;
+    disableActionsColumn?: boolean;
+    disableSelectColumn?: boolean;
+  }
+  
 
 export interface GenericTableRowProps<DataType> {
     row: DataType;
@@ -20,4 +23,6 @@ export interface GenericTableRowProps<DataType> {
     onSelect: () => void;
     onEdit: (data: DataType) => void;
     onDelete: (data: DataType) => void;
+    disableActionsColumn?: boolean;
+    disableSelectColumn?: boolean;
 }
