@@ -6,6 +6,7 @@ import { Bem } from "../types/DataStructures/Bem";
 import { Departamento } from "../types/DataStructures/Departamento";
 import { Sala } from "../types/DataStructures/Sala";
 import { Funcionario } from "../types/DataStructures/Funcionario";
+import { Conferencia } from "../types/DataStructures/Conferencia";
 
 const apiKey = import.meta.env.VITE_API_KEY;
 const firebaseConfig = {
@@ -37,7 +38,7 @@ export const getAllFromCollection = async (collectionName: string) => {
   }
 };
 
-export const createItem = async (collectionName: string, item: Predio | Bem | Departamento | Sala | Funcionario) => {
+export const createItem = async (collectionName: string, item: Predio | Bem | Departamento | Sala | Funcionario | Conferencia) => {
   try {
     const docRef = await addDoc(collection(db, collectionName), item);
     return docRef.id;
@@ -47,7 +48,7 @@ export const createItem = async (collectionName: string, item: Predio | Bem | De
   }
 };
 
-export const updateItem = async (collectionName: string,id: string, updatedData: Partial<Predio | Bem | Departamento | Sala | Funcionario>) => {
+export const updateItem = async (collectionName: string,id: string, updatedData: Partial<Predio | Bem | Departamento | Sala | Funcionario | Conferencia>) => {
   try {
     const predioRef = doc(db, collectionName, id);
     await updateDoc(predioRef, updatedData);
