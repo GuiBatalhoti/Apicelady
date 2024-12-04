@@ -13,6 +13,7 @@ export interface GenericTableProps<DataType> {
     onSelectRow?: (row: DataType | null) => void;
     disableActionsColumn?: boolean;
     disableSelectColumn?: boolean;
+    rowColor?: (row: DataType) => string;
   }
   
 
@@ -25,4 +26,5 @@ export interface GenericTableRowProps<DataType> {
     onDelete: (data: DataType) => void;
     disableActionsColumn?: boolean;
     disableSelectColumn?: boolean;
+    rowColor?: (row: DataType) => string;
 }

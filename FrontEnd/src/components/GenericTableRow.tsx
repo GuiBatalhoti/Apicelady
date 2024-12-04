@@ -13,6 +13,7 @@ const GenericTableRow = <DataType extends Record<string, unknown>,>({ row,
   onDelete,
   disableActionsColumn = false,
   disableSelectColumn = false,
+  rowColor,
 }: GenericTableRowProps<DataType>) => {
 
   const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
@@ -32,10 +33,12 @@ const GenericTableRow = <DataType extends Record<string, unknown>,>({ row,
     });
   };
 
+  const backgroundColor = rowColor?.(row) || 'inherit';
+
   return (
     <>
       {!disableSelectColumn && (
-        <TableCell style={{ width: 20 }}>
+        <TableCell style={{ width: 20, backgroundColor: backgroundColor }}>
           <Radio
             checked={isSelected}
             onChange={onSelect}
@@ -44,7 +47,7 @@ const GenericTableRow = <DataType extends Record<string, unknown>,>({ row,
         </TableCell>
       )}
       {!disableActionsColumn && (
-        <TableCell style={{ width: 20 }}>
+        <TableCell style={{ width: 20, backgroundColor: backgroundColor  }}>
           <IconButton onClick={() => onEdit(row)} aria-label="edit">
             <EditIcon className="edit-icon" />
           </IconButton>
@@ -58,7 +61,7 @@ const GenericTableRow = <DataType extends Record<string, unknown>,>({ row,
         const isArray = Array.isArray(value);
 
         return (
-          <TableCell key={String(column.dataKey)} align={column.numeric ? 'right' : 'left'}>
+          <TableCell key={String(column.dataKey)} align={column.numeric ? 'right' : 'left'} style={{backgroundColor: backgroundColor}}>
             {isArray ? (
               <>
                 <div>
