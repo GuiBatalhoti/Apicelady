@@ -9,13 +9,11 @@ import { Conferencia } from "../types/DataStructures/Conferencia";
 import { Timestamp } from "firebase/firestore";
 import { HomeItem } from './HomeItem';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from "../types/StackParam";
+import { RootStackParamList } from "../types/RootStackParamList";
 
 function HomeScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  // const { receivedData, USBDevice } = useUsbDeviceContext() as unknown as { receivedData: string[], USBDevice: UsbSerial|null };
-  const [tags, setTags] = useState<string[]>([]);
   const [conferenciasList, setConferenciasList] = useState<Conferencia[]>([]);
 
   useEffect(() => {
@@ -29,27 +27,14 @@ function HomeScreen() {
         bensRegistrados: doc.bensRegistrados,
         finalizada: doc.finalizada,
       }));
-      setConferenciasList(conferencias);
+      const conferenciasPendentes = conferencias.filter((conf) => conf.finalizada === "NÃO");
+      setConferenciasList(conferenciasPendentes);
       });
   },[]);
 
   const onItemPress = (item: { sala: string; tipo: string; dataRealizacao: string }) => {
-    navigation.navigate('Conferencia', { item: item });
+    navigation.navigate('Conferencia', { item });
   }
-
-  // const checkDuplicate = (tag: string) => {
-  //   return tags.includes(tag);
-  // };
-
-  // useEffect(() => {
-  //   let newTags: string[] = [];
-  //   receivedData.forEach((tag) => {
-  //     if (!checkDuplicate(tag)) {
-  //       newTags.push(tag);
-  //     };
-  //   });
-  //   setTags([...tags, ...newTags]);
-  // },[receivedData]);
 
   return (
     <View style={styles.container}>
@@ -57,7 +42,10 @@ function HomeScreen() {
         Conferências Pendentes
       </Text>
       <ScrollView> 
-        {conferenciasList.map((conf) => (
+        { conferenciasList.length === 0 ?
+          <Text style={styles.text}>Nenhuma conferência pendente</Text> 
+          :
+          conferenciasList.map((conf) => (
             <HomeItem
               key={conf.docId} // Adicione uma chave única aqui
               sala={conf.local.sigla}
