@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useUsbDeviceContext } from "../context/usbDeviceContext";
 import { View, Text, StyleSheet, Button } from "react-native";
-import { ScreenProps } from "../interfaces/interfaces";
+import { ScreenProps } from "../types/ScreenProps";
 import { DataTable } from "./DataTable";
 import { UsbSerial } from "react-native-usb-serialport-for-android";
-import { checkPat } from "../config/firebase";
-
 
 function HomeScreen({ navigation }: ScreenProps) {
 
@@ -18,14 +16,14 @@ function HomeScreen({ navigation }: ScreenProps) {
 
   const checkDuplicate = (tag: string) => {
     return tags.includes(tag);
-  }
+  };
 
   useEffect(() => {
     let newTags: string[] = [];
     receivedData.forEach((tag) => {
       if (!checkDuplicate(tag)) {
         newTags.push(tag);
-      }
+      };
     });
     setTags([...tags, ...newTags]);
   },[receivedData]);
@@ -35,14 +33,14 @@ function HomeScreen({ navigation }: ScreenProps) {
   }
 
   const handleCheckPat = () => {
-    tags.forEach(async (tag) => {
-      const result = await checkPat(tag);
-      if (result) {
-        console.log(`Patrimônio ${tag} encontrado`);
-      } else {
-        console.log(`Patrimônio ${tag} não encontrado`);
-      }
-    }
+    // tags.forEach(async (tag) => {
+    //   const result = await checkPat(tag);
+    //   if (result) {
+    //     console.log(`Patrimônio ${tag} encontrado`);
+    //   } else {
+    //     console.log(`Patrimônio ${tag} não encontrado`);
+    //   }
+    // });
   }
 
   return (
