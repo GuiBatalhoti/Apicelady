@@ -1,56 +1,72 @@
 import React, { useEffect, useState } from "react";
-import { useUsbDeviceContext } from "../context/usbDeviceContext";
-import { View, Text, StyleSheet, Button } from "react-native";
-import { ScreenProps } from "../types/ScreenProps";
-import { DataTable } from "./DataTable";
-import { UsbSerial } from "react-native-usb-serialport-for-android";
+// import { useUsbDeviceContext } from "../context/usbDeviceContext";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+// import { ScreenProps } from "../types/ScreenProps";
+// import { DataTable } from "./DataTable";
+// import { UsbSerial } from "react-native-usb-serialport-for-android";
+import { getAllFromCollection } from "../config/firebase";
+import { Conferencia } from "../types/DataStructures/Conferencia";
+import { Timestamp } from "firebase/firestore";
+import { HomeItem } from './HomeItem';
+import { Touchable } from "react-native";
 
-function HomeScreen({ navigation }: ScreenProps) {
+function HomeScreen() {
 
-  const { receivedData, USBDevice } = useUsbDeviceContext() as unknown as { receivedData: string[], USBDevice: UsbSerial|null };
+  // const { receivedData, USBDevice } = useUsbDeviceContext() as unknown as { receivedData: string[], USBDevice: UsbSerial|null };
   const [tags, setTags] = useState<string[]>([]);
+  const [conferenciasList, setConferenciasList] = useState<Conferencia[]>([]);
 
   useEffect(() => {
-    setTags(["01"]); // Simulando um dado recebido
+    getAllFromCollection('conferencia').then((data) => {
+      const conferencias: Conferencia[] = data.map((doc) => ({
+        docId: doc.id,
+        dataSolicitacao: new Timestamp((doc.dataSolicitacao as Timestamp).seconds, (doc.dataSolicitacao as Timestamp).nanoseconds).toDate(),
+        dataRealizacao: new Timestamp((doc.dataRealizacao as Timestamp).seconds, (doc.dataRealizacao as Timestamp).nanoseconds).toDate(),
+        tipo: doc.tipo,
+        local: doc.local,
+        bensRegistrados: doc.bensRegistrados,
+        finalizada: doc.finalizada,
+      }));
+      setConferenciasList(conferencias);
+      console.log(conferencias);
+      console.log(conferenciasList);
+      });
   },[]);
 
-  const checkDuplicate = (tag: string) => {
-    return tags.includes(tag);
-  };
-
-  useEffect(() => {
-    let newTags: string[] = [];
-    receivedData.forEach((tag) => {
-      if (!checkDuplicate(tag)) {
-        newTags.push(tag);
-      };
-    });
-    setTags([...tags, ...newTags]);
-  },[receivedData]);
-
-  const handleStartCapture = () => {
-    // Implementar
+  const onItemPress = () => {
+    console.log('Item Pressed');
   }
 
-  const handleCheckPat = () => {
-    // tags.forEach(async (tag) => {
-    //   const result = await checkPat(tag);
-    //   if (result) {
-    //     console.log(`Patrimônio ${tag} encontrado`);
-    //   } else {
-    //     console.log(`Patrimônio ${tag} não encontrado`);
-    //   }
-    // });
-  }
+  // const checkDuplicate = (tag: string) => {
+  //   return tags.includes(tag);
+  // };
+
+  // useEffect(() => {
+  //   let newTags: string[] = [];
+  //   receivedData.forEach((tag) => {
+  //     if (!checkDuplicate(tag)) {
+  //       newTags.push(tag);
+  //     };
+  //   });
+  //   setTags([...tags, ...newTags]);
+  // },[receivedData]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.buttonRow}>
-        <Button title="Limpar Dados" onPress={()=>{setTags([])}} />
-        <Button title="Conferir Patrimônios" onPress={handleCheckPat} />
-      </View>
-      {/* <Text style={styles.text}>USB Device: {USBDevice?.deviceId ? USBDevice.deviceId : 'Nenhum dispositivo conectado'}</Text>      */}
-      <DataTable data={tags}/>
+      <Text style={styles.text}>
+        Conferências Pendentes
+      </Text>
+      <ScrollView> 
+        {conferenciasList.map((conf) => (
+            <HomeItem 
+              sala={conf.local.sigla}
+              tipo={conf.tipo}
+              dataRealizacao={conf.dataRealizacao.toISOString().split('T')[0]}
+              onItemPress={onItemPress}
+            />
+          ))
+        }
+      </ScrollView>
     </View>
   );
 }
@@ -66,16 +82,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     margin: 10,
     textAlign: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  input: {
-    height: 40,
-    width: 150,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
   },
 });
