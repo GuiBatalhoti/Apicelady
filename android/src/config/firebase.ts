@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+/** Por hora não haverá login no App */
+// import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { Predio } from "../types/DataStructures/Predio";
 import { Bem } from "../types/DataStructures/Bem";
@@ -27,8 +28,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
+
+/** Por hora não haverá login no App */
+// export const auth = getAuth(app);
+// export const googleProvider = new GoogleAuthProvider();
 
 export const getAllFromCollection = async (collectionName: string) => {
   try {
