@@ -36,7 +36,7 @@ export default function ConferenciaList() {
         const conferencias: Conferencia[] = data.map((doc) => ({
           docId: doc.id,
           dataSolicitacao: new Timestamp((doc.dataSolicitacao as Timestamp).seconds, (doc.dataSolicitacao as Timestamp).nanoseconds).toDate(),
-          dataRealizacao: doc.dataRealizacao,
+          dataRealizacao: new Timestamp((doc.dataRealizacao as Timestamp).seconds, (doc.dataRealizacao as Timestamp).nanoseconds).toDate(),
           tipo: doc.tipo,
           local: doc.local,
           bensRegistrados: doc.bensRegistrados,
@@ -71,7 +71,7 @@ export default function ConferenciaList() {
   };
 
   const handleOnAbrirConferencia = () => {
-    navigate("");
+    navigate(`/conferencia/${selectedRow?.dataRealizacao.toISOString().split("T")[0]}/${selectedRow?.tipo}/${selectedRow?.local}`); 
   }
 
   const handleDialogClose = () => {
@@ -80,12 +80,37 @@ export default function ConferenciaList() {
   };
 
   const handleSave = (item: Conferencia) => {
+    getAllFromCollection("sala").then((data: DocumentData[]) => {
+      const salas: Sala[] = data.map((doc) => ({
+        docId: doc.id,
+        nome: doc.nome,
+        descricao: doc.descricao,
+        sigla: doc.sigla,
+        predio: doc.predio,
+        telefone: doc.telefone,
+        email: doc.email,
+        numero: doc.numero,
+        predioNome: doc.predioNome,
+        deptoSigla: doc.deptoSigla,
+        area: doc.area,
+        latitude: doc.latitude,
+        longitude: doc.longitude,
+      }));
+      setSalas(salas);
+    })
+
+    const sala = salas.find((sala) => sala.sigla === item.local.toString());
+    
+    if (!sala) {
+      return;
+    }
+
     const novaConferencia: Conferencia = {
       docId: "",
       dataSolicitacao: new Date(item.dataSolicitacao),
-      dataRealizacao: "A DEFINIR",
+      dataRealizacao: new Date(item.dataRealizacao),
       tipo: item.tipo,
-      local: item.local,
+      local: sala,
       bensRegistrados: [],
       finalizada: "NÃO",
     };
@@ -126,6 +151,7 @@ export default function ConferenciaList() {
           item={selectedItem}
           fields={[
             { label: "Data Solicitação", type: "date", key: "dataSolicitacao", disabled: true, defaultValue: new Date().toISOString().split("T")[0] },
+            { label: "Data Realização", type: "date", key: "dataRealizacao", disabled: false },
             { label: "Tipo", type: "dropdown", key: "tipo", disabled: false, options: [
               { label: "Ordinária", value: "ordinaria" },
               { label: "Extraordinária", value: "extraordinaria" }
