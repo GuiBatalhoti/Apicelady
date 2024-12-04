@@ -8,9 +8,11 @@ import { getAllFromCollection } from "../config/firebase";
 import { Conferencia } from "../types/DataStructures/Conferencia";
 import { Timestamp } from "firebase/firestore";
 import { HomeItem } from './HomeItem';
-import { Touchable } from "react-native";
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from "../types/StackParam";
 
 function HomeScreen() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   // const { receivedData, USBDevice } = useUsbDeviceContext() as unknown as { receivedData: string[], USBDevice: UsbSerial|null };
   const [tags, setTags] = useState<string[]>([]);
@@ -28,13 +30,11 @@ function HomeScreen() {
         finalizada: doc.finalizada,
       }));
       setConferenciasList(conferencias);
-      console.log(conferencias);
-      console.log(conferenciasList);
       });
   },[]);
 
-  const onItemPress = () => {
-    console.log('Item Pressed');
+  const onItemPress = (item: { sala: string; tipo: string; dataRealizacao: string }) => {
+    navigation.navigate('Conferencia', { item: item });
   }
 
   // const checkDuplicate = (tag: string) => {
@@ -58,7 +58,8 @@ function HomeScreen() {
       </Text>
       <ScrollView> 
         {conferenciasList.map((conf) => (
-            <HomeItem 
+            <HomeItem
+              key={conf.docId} // Adicione uma chave única aqui
               sala={conf.local.sigla}
               tipo={conf.tipo}
               dataRealizacao={conf.dataRealizacao.toISOString().split('T')[0]}

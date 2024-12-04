@@ -3,8 +3,13 @@ import { Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { HomeItemProps } from '../types/HomeItemProps';
 
 export function HomeItem({ sala, tipo, dataRealizacao, onItemPress }: HomeItemProps) {
+
+  const handlePress = () => {
+    onItemPress({ sala, tipo, dataRealizacao });
+  };
+
   return (
-    <TouchableOpacity style={styles.button} onPress={onItemPress}>
+    <TouchableOpacity style={styles.button} onPress={handlePress}>
       <Text style={styles.text}>
         Sala: {sala}
       </Text>
