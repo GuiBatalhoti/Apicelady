@@ -1,8 +1,8 @@
 import 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
 import LoadingScreen from './src/components/LoadingScreen';
-import DrawerNav from './src/components/DrawerNav';
 import { USBDeviceProvider } from './src/context/usbDeviceContext';
+import HomeScreen from './src/components/HomeScreen';
 
 function App(): React.JSX.Element {
 
@@ -22,7 +22,7 @@ function App(): React.JSX.Element {
 
   return (
     <USBDeviceProvider>
-      <DrawerNav />
+      <HomeScreen />
     </USBDeviceProvider>
   );
 }
