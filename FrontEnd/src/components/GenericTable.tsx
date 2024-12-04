@@ -13,6 +13,7 @@ function GenericTable<DataType extends Record<string, any>>({
   onSelectRow,
   disableActionsColumn = false,
   disableSelectColumn = false,
+  rowColor,
 }: GenericTableProps<DataType>) {
   const [selectedRow, setSelectedRow] = useState<DataType | null>(null);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
@@ -98,6 +99,7 @@ function GenericTable<DataType extends Record<string, any>>({
             onDelete={onDelete?? (() => {})}
             disableActionsColumn={disableActionsColumn}
             disableSelectColumn={disableSelectColumn}
+            rowColor={rowColor}
           />
         )}
       />
