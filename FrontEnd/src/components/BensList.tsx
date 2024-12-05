@@ -55,10 +55,8 @@ export default function BemsList() {
         }) : conf) : [],
       }));
       if (nomePredio) {
-        console.log("Filtrando Bems por prédio e sala:", nomePredio, siglaSala);
         const filteredBens = bens.filter((bem) => bem.localizacao[bem.localizacao.length - 1].atributo === siglaSala);
         setBemsList(filteredBens);
-        console.log("Bens filtrados:", filteredBens);
       } else {
         setBemsList(bens);
       }
