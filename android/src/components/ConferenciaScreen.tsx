@@ -1,37 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Button, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useUsbDeviceContext } from '../context/usbDeviceContext';
 import { UsbSerial } from 'react-native-usb-serialport-for-android';
 import { DataTable } from './DataTable';
 import { Bem } from '../types/DataStructures/Bem';
-import { getAllFromCollection } from '../config/firebase';
+import { getAllFromCollection, updateItem } from '../config/firebase';
 import { DocumentData, Timestamp } from 'firebase/firestore';
+import { Conferencia } from '../types/DataStructures/Conferencia';
 
-function ConferenciaScreen({route}: any) {
-
+function ConferenciaScreen({ route }: any) {
   const navigation = useNavigation();
   const item = route.params.item;
-  const { receivedData, USBDevice } = useUsbDeviceContext() as unknown as { receivedData: string[], USBDevice: UsbSerial|null };
+  const { receivedData, USBDevice } = useUsbDeviceContext() as unknown as { receivedData: string[], USBDevice: UsbSerial | null };
 
   const [tags, setTags] = useState<string[]>([]);
-  const [isCapturing, setIsCapturing] = useState<boolean>(false);
   const [bemsList, setBemsList] = useState<Bem[]>([]);
   const [totalBemsSala, setTotalBemsSala] = useState<number>(0);
-  const [bemsCapturados, setBemsCapturados] = useState<number>(0);
+  const [bemsCapturados, setBemsCapturados] = useState<Bem[]>([]);
 
-  const checkDuplicate = (tag: string) => {
-    return tags.includes(tag);
-  };
-
-  
+  // Carregar lista de bens ao montar
   useEffect(() => {
-    getAllFromCollection("bem").then((data: DocumentData[]) => {
-      const bens: Bem[] = data.map((doc) => ({
+    const loadBens = async () => {
+      const data: DocumentData[] = await getAllFromCollection("bem");
+      const bens: Bem[] = data.map(doc => ({
         docId: doc.id,
         numero: doc.numero,
         descricao: doc.descricao,
-        data_aquisicao: new Timestamp(doc.data_aquisicao.seconds, doc.data_aquisicao.nanoseconds).toDate(),
+        data_aquisicao: doc.data_aquisicao.toDate(),
         valor_aquisicao: doc.valor_aquisicao,
         valor_presente: doc.valor_presente,
         status: doc.status,
@@ -40,62 +36,86 @@ function ConferenciaScreen({route}: any) {
           data: new Timestamp(loc.data.seconds, loc.data.nanoseconds).toDate(),
           atributo: loc.atributo,
         }) : loc),
-        responsavel: doc.responsavel.map((resp: any) => resp.data ? ({
-          data: new Timestamp(resp.data.seconds, resp.data.nanoseconds).toDate(),
-          atributo: resp.atributo,
-        }) : resp),
-        conferido: doc.conferido ? doc.conferido.map((conf: any) => conf.data ? ({
-          data: new Timestamp(conf.data.seconds, conf.data.nanoseconds).toDate(),
-          atributo: conf.atributo,
-        }) : conf) : [],
-      }
-    ));
+        responsavel: doc.responsavel || [],
+        conferido: doc.conferido || [],
+      }));
 
-    const filteredBens = bens.filter((bem) => bem.localizacao[bem.localizacao.length - 1].atributo === item.sala);
-    setBemsList(filteredBens);
-    setTotalBemsSala(filteredBens.length);
-    });
-  },[]);
+      const filteredBens = bens.filter(
+        bem => bem.localizacao[bem.localizacao.length - 1]?.atributo === item.sala
+      );
 
+      setBemsList(filteredBens);
+      setTotalBemsSala(filteredBens.length);
+    };
+
+    loadBens();
+  }, [item.sala]);
+
+  // Atualizar tags ao receber novos dados
   useEffect(() => {
-    if (isCapturing) {
-      let newTags: string[] = [];
-      receivedData.forEach((tag) => {
-        if (!checkDuplicate(tag)) {
-          newTags.push(tag);
-        };
+    if (receivedData.length > 0) {
+      setTags(prevTags => {
+        const newTags = receivedData.filter(tag => !prevTags.includes(tag));
+        return newTags.length > 0 ? [...prevTags, ...newTags] : prevTags;
       });
-      setTags([...tags, ...newTags]);
     }
-  },[receivedData]);
+  }, [receivedData]);
 
-  const handleOnFinalizarConferirBems = () => {
-    // Implementar
-  }
+  const handleOnFinalizarConferirBems = useCallback(async () => {
+    const data: DocumentData[] = await getAllFromCollection("conferencia");
+    const conferencias: Conferencia[] = data.map(doc => ({
+      docId: doc.id,
+      dataSolicitacao: new Timestamp(doc.dataSolicitacao.seconds, doc.dataSolicitacao.nanoseconds).toDate(),
+      dataRealizacao: new Timestamp(doc.dataRealizacao.seconds, doc.dataRealizacao.nanoseconds).toDate(),
+      tipo: doc.tipo,
+      local: doc.local,
+      bensRegistrados: doc.bensRegistrados || [],
+      finalizada: doc.finalizada,
+    }));
 
-  const getRowColor = (row: string): string => {
-    const bem = bemsList.find((bem) => bem.numero.toString() === row);
+    const confAtual = conferencias.find(
+      conf =>
+        conf.docId === item.docId
+    );
 
-    if (bem?.localizacao !== item.sala) {
-      return "#f8d7da";
+    if (confAtual) {
+      confAtual.finalizada = "SIM";
+      confAtual.bensRegistrados = bemsCapturados;
+      await updateItem("conferencia", confAtual.docId, confAtual);
+      Alert.alert("Conferência Finalizada", "A conferência foi finalizada com sucesso.");
+      navigation.goBack();
     }
-    if (bem?.localizacao === item.sala) {
-      return "#d4edda";
+  }, [bemsCapturados, item, navigation]);
+
+  const getRowColor = useCallback((row: string): string => {
+    const bem = bemsList.find(bem => bem.numero.toString() === row);
+
+    if (bem) {
+      const isAlreadyCaptured = bemsCapturados.some(captured => captured.numero === bem.numero);
+      if (!isAlreadyCaptured) {
+        setBemsCapturados(prev => [...prev, bem]);
+      }
+
+      if (bem.localizacao[bem.localizacao.length - 1]?.atributo !== item.sala) {
+        return "#f8d7da"; // Vermelho para localização incorreta
+      }
+      return "#d4edda"; // Verde para localização correta
     }
-    return "#fff3cd";
-  }
+
+    return "#fff3cd"; // Amarelo para não encontrado
+  }, [bemsList, bemsCapturados, item.sala]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>A Sala {item.sala} possui {totalBemsSala} bens alocados. </Text>
-      <Text style={styles.text}>Foram capturados {bemsCapturados} bens. </Text>
+      <Text style={styles.text}>Foram capturados {bemsCapturados.length} bens. </Text>
       <View style={styles.buttonRow}>
-        <Button title="Iniciar Captura" onPress={() => setIsCapturing(true)} />
         <Button title="Finalizar Conferência" onPress={handleOnFinalizarConferirBems} />
       </View>
-      <DataTable 
-      data={tags}
-      getRowColor={getRowColor} />
+      <DataTable
+        data={tags}
+        getRowColor={getRowColor}
+      />
     </View>
   );
 }
@@ -115,12 +135,5 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-  },
-  input: {
-    height: 40,
-    width: 150,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
   },
 });
