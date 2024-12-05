@@ -133,6 +133,9 @@ export default function BemsConferidosList() {
   };
 
   const getRowColor = (row: Bem): string => {
+    if (row.localizacao.length === 0) {
+      return "#fff3cd";
+    }
     if (row.localizacao[row.localizacao.length - 1].atributo !== local) {
       return "#f8d7da";
     }
