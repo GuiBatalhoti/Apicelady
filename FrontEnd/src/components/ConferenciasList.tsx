@@ -44,7 +44,7 @@ export default function ConferenciaList() {
         }));
         setConferenciasList(conferencias);
       });
-    }, []);
+    }, [conferenciasList]);
 
   const handleOnSolicitarConferencia = () => {
     getAllFromCollection("sala").then((data: DocumentData[]) => {
