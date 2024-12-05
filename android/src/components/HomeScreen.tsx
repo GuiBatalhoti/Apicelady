@@ -32,7 +32,7 @@ function HomeScreen() {
       });
   },[]);
 
-  const onItemPress = (item: { sala: string; tipo: string; dataRealizacao: string }) => {
+  const onItemPress = (item: { sala: string; tipo: string; dataRealizacao: string, docId: string }) => {
     navigation.navigate('Conferencia', { item });
   }
 
@@ -50,6 +50,7 @@ function HomeScreen() {
               key={conf.docId} // Adicione uma chave única aqui
               sala={conf.local.sigla}
               tipo={conf.tipo}
+              docId={conf.docId}
               dataRealizacao={conf.dataRealizacao.toISOString().split('T')[0]}
               onItemPress={onItemPress}
             />

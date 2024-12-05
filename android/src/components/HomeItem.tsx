@@ -2,10 +2,10 @@ import React from 'react';
 import { Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { HomeItemProps } from '../types/HomeItemProps';
 
-export function HomeItem({ sala, tipo, dataRealizacao, onItemPress }: HomeItemProps) {
+export function HomeItem({ sala, tipo, dataRealizacao, docId, onItemPress }: HomeItemProps) {
 
   const handlePress = () => {
-    onItemPress({ sala, tipo, dataRealizacao });
+    onItemPress({ sala, tipo, dataRealizacao, docId });
   };
 
   return (
