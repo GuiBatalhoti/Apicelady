@@ -106,7 +106,10 @@ const GenericTableRow = <DataType extends Record<string, unknown>,>({ row,
                   </>
                 )}
               </>
-            ) : (
+            ) : typeof value === 'object' && value !== null && 'sigla' in value ? (
+              (value as { sigla: string }).sigla || ''
+            ) :
+            (
               value instanceof Date ? formatDate(value) : String(value)
             )}
           </TableCell>
