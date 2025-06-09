@@ -44,7 +44,7 @@ export default function ConferenciaList() {
         }));
         setConferenciasList(conferencias);
       });
-    }, []);
+    }, [conferenciasList]);
 
   const handleOnSolicitarConferencia = () => {
     getAllFromCollection("sala").then((data: DocumentData[]) => {
@@ -53,9 +53,6 @@ export default function ConferenciaList() {
         nome: doc.nome,
         descricao: doc.descricao,
         sigla: doc.sigla,
-        predio: doc.predio,
-        telefone: doc.telefone,
-        email: doc.email,
         numero: doc.numero,
         predioNome: doc.predioNome,
         deptoSigla: doc.deptoSigla,
@@ -71,7 +68,7 @@ export default function ConferenciaList() {
   };
 
   const handleOnAbrirConferencia = () => {
-    navigate(`/conferencia/${selectedRow?.dataRealizacao.toISOString().split("T")[0]}/${selectedRow?.tipo}/${selectedRow?.local}`); 
+    navigate(`/conferencia/${selectedRow?.docId}/${selectedRow?.dataRealizacao.toISOString().split("T")[0]}/${selectedRow?.tipo}/${selectedRow?.local.sigla}`); 
   }
 
   const handleDialogClose = () => {
@@ -80,28 +77,10 @@ export default function ConferenciaList() {
   };
 
   const handleSave = (item: Conferencia) => {
-    getAllFromCollection("sala").then((data: DocumentData[]) => {
-      const salas: Sala[] = data.map((doc) => ({
-        docId: doc.id,
-        nome: doc.nome,
-        descricao: doc.descricao,
-        sigla: doc.sigla,
-        predio: doc.predio,
-        telefone: doc.telefone,
-        email: doc.email,
-        numero: doc.numero,
-        predioNome: doc.predioNome,
-        deptoSigla: doc.deptoSigla,
-        area: doc.area,
-        latitude: doc.latitude,
-        longitude: doc.longitude,
-      }));
-      setSalas(salas);
-    })
-
-    const sala = salas.find((sala) => sala.sigla === item.local.toString());
-    
+    const local = item.local.toString();
+    const sala = salas.find((sala) => sala.sigla === local);
     if (!sala) {
+      console.error("Sala not found");
       return;
     }
 

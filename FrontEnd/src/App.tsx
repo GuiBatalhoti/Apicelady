@@ -94,7 +94,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/conferencia/:dataRealizacao/:tipo/:local"
+        <Route path="/conferencia/:docId/:dataRealizacao/:tipo/:local"
           element={
             <ProtectedRoute>
               <BensConferidosList />

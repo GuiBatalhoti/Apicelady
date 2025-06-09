@@ -18,6 +18,7 @@ export default function BemsConferidosList() {
   const navigate = useNavigate();
   const{ dataRealizacao: dataRealizacao } = useParams();
   const{ local: local } = useParams();
+  const{ docId: docId } = useParams();
 
   const [conferenciaBemsList, setConferenciaBemsList] = useState<Bem[]>([]);
   const [conferencia, setConferencia] = useState<Conferencia | undefined>();
@@ -31,16 +32,38 @@ export default function BemsConferidosList() {
     getAllFromCollection("conferencia").then((data: DocumentData[]) => {
       const conferencias: Conferencia[] = data.map((doc) => ({
         docId: doc.id,
-        dataSolicitacao: new Timestamp(doc.data_solicitacao.seconds, doc.data_solicitacao.nanoseconds).toDate(),
-        dataRealizacao: new Timestamp(doc.data_realizacao.seconds, doc.data_realizacao.nanoseconds).toDate(),
+        dataSolicitacao: new Timestamp(doc.dataSolicitacao.seconds, doc.dataSolicitacao.nanoseconds).toDate(),
+        dataRealizacao: new Timestamp(doc.dataRealizacao.seconds, doc.dataRealizacao.nanoseconds).toDate(),
         tipo: doc.tipo,
         local: doc.local,
-        bensRegistrados: doc.bensRegistrados,
+        bensRegistrados: doc.bensRegistrados.map((bem: Bem) => ({
+          docId: bem.docId,
+          numero: bem.numero,
+          descricao: bem.descricao,
+          data_aquisicao: new Timestamp(bem.data_aquisicao.seconds, bem.data_aquisicao.nanoseconds).toDate(),
+          valor_aquisicao: bem.valor_aquisicao,
+          valor_presente: bem.valor_presente,
+          status: bem.status,
+          condicao_uso: bem.condicao_uso,
+          localizacao: bem.localizacao.map((loc: any) => loc.data ? ({
+            data: new Timestamp(loc.data.seconds, loc.data.nanoseconds).toDate(),
+            atributo: loc.atributo,
+          }) : loc),
+          responsavel: bem.responsavel.map((resp: any) => resp.data ? ({
+            data: new Timestamp(resp.data.seconds, resp.data.nanoseconds).toDate(),
+            atributo: resp.atributo,
+          }) : resp),
+          conferido: bem.conferido ? bem.conferido.map((conf: any) => conf.data ? ({
+            data: new Timestamp(conf.data.seconds, conf.data.nanoseconds).toDate(),
+            atributo: conf.atributo,
+          }) : conf) : [],
+          })
+          ),
         finalizada: doc.finalizada,
       }));
 
-      const conferencia = conferencias.find((conf) => conf.dataRealizacao.toISOString().split("T")[0] === dataRealizacao && conf.local.sigla === local);
-      setConferencia(conferencia);
+      const conferencia = conferencias.find((conf) => conf.docId === docId);
+      console.log("Conferencia:", conferencia);
       setConferenciaBemsList(conferencia?.bensRegistrados || []);
     });
   }, [local]);
@@ -110,6 +133,9 @@ export default function BemsConferidosList() {
   };
 
   const getRowColor = (row: Bem): string => {
+    if (row.localizacao.length === 0) {
+      return "#fff3cd";
+    }
     if (row.localizacao[row.localizacao.length - 1].atributo !== local) {
       return "#f8d7da";
     }
