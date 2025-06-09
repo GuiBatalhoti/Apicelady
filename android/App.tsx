@@ -1,28 +1,16 @@
 import 'react-native-gesture-handler';
-import React, {useState, useEffect} from 'react';
-import LoadingScreen from './src/components/LoadingScreen';
-import DrawerNav from './src/components/DrawerNav';
+import React from 'react';
 import { USBDeviceProvider } from './src/context/usbDeviceContext';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import StackNav from './src/components/StackNav';
+
+const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
 
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  },[]);
-
-  if (loading) {
-    return (
-      <LoadingScreen />
-    )
-  }
-
   return (
     <USBDeviceProvider>
-      <DrawerNav />
+      <StackNav />
     </USBDeviceProvider>
   );
 }

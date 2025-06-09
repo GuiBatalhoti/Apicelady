@@ -1,19 +1,20 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { collection, DocumentData, getDocs, getFirestore } from "firebase/firestore";
-import data from '../../.env.json'
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+/** Por hora não haverá login no App */
+// import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { Predio } from "../types/DataStructures/Predio";
+import { Bem } from "../types/DataStructures/Bem";
+import { Departamento } from "../types/DataStructures/Departamento";
+import { Sala } from "../types/DataStructures/Sala";
+import { Funcionario } from "../types/DataStructures/Funcionario";
+import { Conferencia } from "../types/DataStructures/Conferencia";
+import data from "../../.env.json";
 
 interface apikey {
-    FIREBASE_API_KEY: string
+  FIREBASE_API_KEY: string
 }
 
-const apikey: apikey = data
+const apikey: apikey = data;
 
 const firebaseConfig = {
   apiKey: apikey.FIREBASE_API_KEY,
@@ -25,30 +26,54 @@ const firebaseConfig = {
   measurementId: "G-TN1ZVHGSP4"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-if (app) {
-  console.log('');
-  console.log('Connected to Firebase');
-  console.log('');
-}
-export const db = getFirestore(app);
+const db = getFirestore(app);
 
-export const getBens = async () => {
-  const bens: DocumentData[] = [];
-  const querySnapshot = await getDocs(collection(db, "bens"));
-  querySnapshot.forEach((doc) => {
-    bens.push(doc.data());
-  });
-  return bens
-}
+/** Por hora não haverá login no App */
+// export const auth = getAuth(app);
+// export const googleProvider = new GoogleAuthProvider();
 
-export const checkPat = async (pat: string) => {
-  const bens = await getBens();
-  const patrimony = bens.find((bem) => bem.patrimonio === pat);
-  if (patrimony) {
-    return true;
-  } else {
-    return false;
+export const getAllFromCollection = async (collectionName: string) => {
+  try {
+    const dbCollectionResults = await getDocs(collection(db, collectionName));
+    const collectionItems = dbCollectionResults.docs.map((doc) => ({
+      id: doc.id, // Inclui o ID do documento
+      ...doc.data(),
+    }));
+    return collectionItems;
+  } catch (error) {
+    console.error("Erro ao buscar:", error);
+    throw error;
   }
-}
+};
+
+export const createItem = async (collectionName: string, item: Predio | Bem | Departamento | Sala | Funcionario | Conferencia) => {
+  try {
+    const docRef = await addDoc(collection(db, collectionName), item);
+    return docRef.id;
+  } catch (error) {
+    console.error("Erro ao criar:", error);
+    throw error;
+  }
+};
+
+export const updateItem = async (collectionName: string,id: string, updatedData: Partial<Predio | Bem | Departamento | Sala | Funcionario | Conferencia>) => {
+  try {
+    const predioRef = doc(db, collectionName, id);
+    await updateDoc(predioRef, updatedData);
+    console.log("Atualizado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao atualizar:", error);
+    throw error;
+  }
+};
+
+export const deleteItem = async (collectionName: string, id: string) => {
+  try {
+    await deleteDoc(doc(db, collectionName, id));
+    console.log("Deletado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao deletar:", error);
+    throw error;
+  }
+};

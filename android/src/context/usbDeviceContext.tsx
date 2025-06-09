@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useRef, useEffect, useCallback } from 'react';
 import { Alert, DeviceEventEmitter } from 'react-native';
 import { UsbSerialManager, Device, UsbSerial, Parity, EventData } from 'react-native-usb-serialport-for-android';
-import { UsbDeviceContextType, USBDeviceProviderProps } from '../interfaces/interfaces';
+import { UsbDeviceContextType, USBDeviceProviderProps } from '../types/USBDeviceProps';
 
 const UsbDeviceContext = createContext<UsbDeviceContextType>({
   receivedData: [], //somente o EPC da tag/ patrimônio
